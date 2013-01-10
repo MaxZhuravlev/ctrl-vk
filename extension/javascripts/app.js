@@ -1,7 +1,24 @@
 $(document).ready(function(){
     console.log('app start');
-    $('.add_media_type_2_photo').show();
-    $('.add_media_type_2_photo').click();
-    console.log('click 1');
-    $('.photos_choose_row a').click();
+
+    var ctrlDown = false;
+    var ctrlKey = 17, vKey = 86, cKey = 67;
+
+    $(document).keydown(function(e)
+    {
+        if (e.keyCode == ctrlKey) ctrlDown = true;
+    }).keyup(function(e)
+        {
+            if (e.keyCode == ctrlKey) ctrlDown = false;
+        });
+
+    //$(".no-copy-paste").keydown(function(e)
+    $(document).keydown(function(e)
+    {
+        if (ctrlDown && (e.keyCode == vKey)){
+            alert('ctr+v detected!');
+
+        }
+    });
+
 });
