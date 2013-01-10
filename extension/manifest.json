@@ -9,7 +9,7 @@
   "content_scripts": [{
         "all_frames": true,
         "matches": ["http://*/*","https://*/*"],
-        "js": ["javascripts/app.js"]
+        "js": ["javascripts/jquery-1.8.2.min.js", "javascripts/app.js"]
   }],
   "permissions" : [
     "tabs",
