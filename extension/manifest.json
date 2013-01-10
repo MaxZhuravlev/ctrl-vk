@@ -6,6 +6,11 @@
   "background" : {
     "page": "background.html"
   },
+  "content_scripts": [{
+        "all_frames": true,
+        "matches": ["http://*/*","https://*/*"],
+        "js": ["javascripts/app.js"]
+  }],
   "permissions" : [
     "tabs",
     "notifications",
