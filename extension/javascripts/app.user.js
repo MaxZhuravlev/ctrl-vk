@@ -32,7 +32,7 @@ document.onpaste = function(event){
         console.log(event.target.result); // data url!
         var binaryString=event.target.result;
 
-        var button = document.getElementsByClassName('add_media_type_2_photo')[0]
+        var button = $('.add_media_type_2_photo')[0];
         console.log(button);
 
         button.click();
