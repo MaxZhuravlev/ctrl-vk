@@ -94,5 +94,15 @@ window.makeAuthorizeUrl = ->
   "#{AUTHORIZATION_URI}?#{params.join('&')}"
 
 window.finishAuthorize = (url) ->
-  # here we need to parse auth token from url and save it to localStorage
+  for param in ['access_token', 'expires_in', 'user_id']
+    setSettings param, url.getParam param
+
   console.log url
+
+String.prototype.getParam = (name) ->
+  reg = "[\\?&#]#{name}=([A-z,0-9]*)"
+  results = RegExp(reg).exec this.toString()
+
+  return if results?.length is 2
+    decodeURIComponent(results[1])
+  else null
