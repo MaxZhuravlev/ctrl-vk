@@ -56,12 +56,9 @@ window.getSettings = (name) ->
   data = JSON.parse localStorage.getItem "#{APP_NAME}:#{name}"
 
   unless data
-    return alert 'your settings are empty'
+    return console.log 'your settings are empty'
 
-  if value = data[name]
-    return value
-  else
-    return null
+  return data[name] or null
 
 
 window.setSettings = (name, value) ->
@@ -70,7 +67,9 @@ window.setSettings = (name, value) ->
 
   data = JSON.parse localStorage.getItem "#{APP_NAME}:#{name}"
 
-  date[name] = value
+  data = data or {}
+
+  data[name] = value
 
   localStorage.setItem "#{APP_NAME}:#{name}", JSON.stringify value
 
