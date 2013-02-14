@@ -56,7 +56,7 @@ window.getSettings = (name) ->
   data = JSON.parse localStorage.getItem "#{APP_NAME}:#{name}"
 
   unless data
-    return alert 'update your browser, dude'
+    return alert 'your settings are empty'
 
   if value = data[name]
     return value
