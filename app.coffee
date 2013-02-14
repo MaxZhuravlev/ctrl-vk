@@ -11,6 +11,14 @@ authorizeInProgress = no
 if dev # TODO figure out why getSettings() is undefined
   console.log 'app start'
 
+  vk = new Vk
+    client_id: CLIENT_ID
+    authorization_uri: AUTHORIZATION_URI
+    redirect_uri: REDIRECT_URI
+    api_url: API_URI
+    access_token: getSettings 'access_token'
+    album_id: getSettings 'album_id'
+
   document.onpaste = (event) ->
     items = event.clipboardData.items
 
@@ -111,3 +119,50 @@ processClipboard   = (item) ->
         console.log 'add_media_type_2_photo click'
 
     reader.readAsBinaryString blob
+
+class Vk
+  constructor: (params = {}) ->
+    @client_id = params.client_id
+    @redirect_uri = params.redirect_uri
+
+    @access_token = params.access_token
+
+  makeUrl: (base, method, prms) ->
+    params.push "#{name}=#{value}" for name, value of prms
+    params = params.join '&'
+
+    return if method id 'auth'
+      "#{base}?#{params}"
+    else
+      "#{base}/#{method}?#{params}"
+
+  makeAuthorizeUrl: ->
+    params =
+      client_id: @client_id
+      scope: 'photos'
+      display: 'popup'
+      redirect_uri: @redirect_uri
+      response_type: 'token'
+
+    @makeUrl AUTHORIZATION_URI, 'auth', params
+
+
+
+  getUploadUrl: (callback) ->
+    params =
+      access_token: @access_token
+      aid: @album_id
+      save_big: 1
+
+    url = @makeUrl @api_url, 'photos.getUploadServer', params
+    @request url, null, 'GET', callback
+
+  uploadImage: (image, url_param, callback) ->
+    @request url_param.url, image, 'POST', callback
+
+  saveImage: (album_id_prms, params, callback) ->
+
+  request: (url, data, type = 'GET', callback) ->
+    $.ajax
+      url: url, data: data, type: type, success: callback
+      contentType: off, processData: off, cache: off
