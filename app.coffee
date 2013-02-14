@@ -4,44 +4,50 @@ AUTHORIZATION_URI = 'https://api.vkontakte.ru/oauth/authorize'
 REDIRECT_URI = 'http://api.vk.com/blank.html' # redirect uri for vk.com
 API_URI = 'https://api.vk.com' # api uri for vk.com
 
-console.log 'app start'
+dev = yes
 
-document.onpaste = (event) ->
-  items = event.clipboardData.items
+#if getSettings 'accessToken' or dev
+if dev # TODO figure out why getSettings() is undefined
+  console.log 'app start'
 
-  # will give you the mime types
-  console.log JSON.stringify(items)
+  document.onpaste = (event) ->
+    items = event.clipboardData.items
 
-  if (item = items[1]) and /^image/.test(item['type'])
+    # will give you the mime types
+    console.log JSON.stringify(items)
 
-    blob = item.getAsFile()
-    reader = new FileReader
+    if (item = items[1]) and /^image/.test(item['type'])
 
-    #например можно вставить картинку в страницу
-    #reader.onload = (event) ->
-    #console.log(event.target.result) // data url!
-    #img = document.createElement('img')
-    #img.src=event.target.result
-    #document.body.appendChild(img)
+      blob = item.getAsFile()
+      reader = new FileReader
 
-    reader.readAsDataURL blob
+      #например можно вставить картинку в страницу
+      #reader.onload = (event) ->
+      #console.log(event.target.result) // data url!
+      #img = document.createElement('img')
+      #img.src=event.target.result
+      #document.body.appendChild(img)
 
-    # If you want to upload it instead, you could use readAsBinaryString,
-    # or you could probably put it into an XHR using FormData
-    # https://developer.mozilla.org/en/XMLHttpRequest/FormData
-    reader.onload = (event) ->
+      reader.readAsDataURL blob
 
-      # data url!
-      console.log event.target.result
-      binaryString = event.target.result
+      # If you want to upload it instead, you could use readAsBinaryString,
+      # or you could probably put it into an XHR using FormData
+      # https://developer.mozilla.org/en/XMLHttpRequest/FormData
+      reader.onload = (event) ->
 
-      button = $('.add_media_type_2_photo')[0]
-      console.log(button)
+        # data url!
+        console.log event.target.result
+        binaryString = event.target.result
 
-      if button.click()
-        console.log 'add_media_type_2_photo click'
+        button = $('.add_media_type_2_photo')[0]
+        console.log(button)
 
-    reader.readAsBinaryString blob
+        if button.click()
+          console.log 'add_media_type_2_photo click'
+
+      reader.readAsBinaryString blob
+else
+  do requestAccessToken
 
 window.getSettings = (name) ->
   unless localStorage
@@ -67,3 +73,9 @@ window.setSettings = (name, value) ->
   date[name] = value
 
   localStorage.setItem "#{APP_NAME}:#{name}", JSON.stringify value
+
+# here we will be open new window (or tab) with auth page
+# for getting acceess toke
+window.requestAccessToken = ->
+  console.log 'open new tab..'
+  no
