@@ -106,3 +106,20 @@ String.prototype.getParam = (name) ->
   return if results?.length is 2
     decodeURIComponent(results[1])
   else null
+
+
+class Vk
+  constructor: (params = {}) ->
+    @client_id = params.client_id
+    @redirect_uri = params.redirect_uri
+
+  makeAuthorizeUrl: ->
+    params.push "#{name}=#{value}" for name, value of {
+      client_id: @client_id
+      scope: 'photos'
+      display: 'popup'
+      redirect_uri: @redirect_uri
+      response_type: 'token'
+    }
+
+    "#{AUTHORIZATION_URI}?#{params.join('&')}"
