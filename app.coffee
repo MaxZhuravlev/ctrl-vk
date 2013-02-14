@@ -1,3 +1,9 @@
+APP_NAME = 'ctrl-vk'
+CLIENT_ID = 3427457
+AUTHORIZATION_URI = 'https://api.vkontakte.ru/oauth/authorize'
+REDIRECT_URI = 'http://api.vk.com/blank.html' # redirect uri for vk.com
+API_URI = 'https://api.vk.com' # api uri for vk.com
+
 console.log 'app start'
 
 document.onpaste = (event) ->
@@ -36,3 +42,28 @@ document.onpaste = (event) ->
         console.log 'add_media_type_2_photo click'
 
     reader.readAsBinaryString blob
+
+window.getSettings = (name) ->
+  unless localStorage
+    return alert 'update your browser, dude'
+
+  data = JSON.parse localStorage.getItem "#{APP_NAME}:#{name}"
+
+  unless data
+    return alert 'update your browser, dude'
+
+  if value = data[name]
+    return value
+  else
+    return null
+
+
+window.setSettings = (name, value) ->
+  unless localStorage
+    return alert 'update your browser, dude'
+
+  data = JSON.parse localStorage.getItem "#{APP_NAME}:#{name}"
+
+  date[name] = value
+
+  localStorage.setItem "#{APP_NAME}:#{name}", JSON.stringify value
