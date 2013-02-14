@@ -5,6 +5,7 @@ REDIRECT_URI = 'http://api.vk.com/blank.html' # redirect uri for vk.com
 API_URI = 'https://api.vk.com' # api uri for vk.com
 
 dev = yes
+authorizeInProgress = no
 
 #if getSettings 'accessToken' or dev
 if dev # TODO figure out why getSettings() is undefined
@@ -77,4 +78,21 @@ window.setSettings = (name, value) ->
 # for getting acceess toke
 window.requestAccessToken = ->
   console.log 'open new tab..'
+  authorizeInProgress = yes
+  open makeAuthorizeUrl()
   no
+
+window.makeAuthorizeUrl = ->
+  params.push "#{name}=#{value}" for name, value of {
+    client_id: CLIENT_ID
+    scope: 'photos'
+    display: 'popup'
+    redirect_uri: REDIRECT_URI
+    response_type: 'token'
+  }
+
+  "#{AUTHORIZATION_URI}?#{params.join('&')}"
+
+window.finishAuthorize = (url) ->
+  # here we need to parse auth token from url and save it to localStorage
+  console.log url
