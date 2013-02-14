@@ -1,11 +1,11 @@
 {
   "name": "ctrl-vk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "manifest_version": 2,
   "description": "Chrome extension for ctrl+v insertion of images to vk.com",
 
   "content_scripts": [{
-    "matches": ["http://*/*","https://*/*"],
+    "matches": ["http://vk.com/*","https://vk.com/*"],
     "js": ["javascripts/jquery-1.9.1.min.js",
       "javascripts/app.js"
     ],
