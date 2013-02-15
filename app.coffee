@@ -5,7 +5,6 @@ REDIRECT_URI = 'http://api.vk.com/blank.html' # redirect uri for vk.com
 API_URI = 'https://api.vk.com' # api uri for vk.com
 
 dev = yes
-authorizeInProgress = no
 
 window.onload = () ->
   window.app = new App dev
@@ -36,6 +35,7 @@ window.onload = () ->
 class App
   constructor: ->
     console.log 'app start'
+    @authorizeInProgress = no
 
 
   isAuth: ->
@@ -68,8 +68,11 @@ class App
 
 
   requestAccessToken: ->
-    authorizeInProgress = yes
-    open Vk.makeAuthorizeUrl() # call a class method
+    @authorizeInProgress = yes
+    url = Vk.makeAuthorizeUrl() # call a class method
+    # turns out we have not access to tabs api from content script :-(
+    #chrome.tabs.create url: url, selected: yes
+    open url
     console.log 'open new tab..'
 
 
