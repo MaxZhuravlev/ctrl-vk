@@ -9,6 +9,9 @@ dev = yes
 window.onload = () ->
   window.app = new App dev
 
+  # for background.js
+  app.setSettings 'REDIRECT_URI', REDIRECT_URI
+
   if app.isAuth()
 
     window.vk = new Vk
@@ -29,13 +32,14 @@ window.onload = () ->
       @processClipboard item for item in items
 
   else
-    do app.requestAccessToken
+    unless app.getSettings('authorize_in_progress') is yes
+      do app.requestAccessToken
 
 
 class App
   constructor: ->
     console.log 'app start'
-    @authorizeInProgress = no
+    @setSettings 'authorize_in_progress', no
 
 
   isAuth: ->
@@ -43,32 +47,22 @@ class App
 
 
   getSettings: (name) ->
-    unless localStorage
-      return alert 'update your browser, dude'
-
-    data = JSON.parse localStorage.getItem "#{APP_NAME}:#{name}"
-
-    unless data
-      return console.log 'your settings are empty'
-
-    return data[name] or null
+    return alert 'update your browser, dude' unless localStorage
+    data = JSON.parse localStorage.getItem APP_NAME
+    return console.log "your settings (#{name}) are empty" unless data
+    return data[name]
 
 
   setSettings: (name, value) ->
-    unless localStorage
-      return alert 'update your browser, dude'
-
-    data = JSON.parse localStorage.getItem "#{APP_NAME}:#{name}"
-
+    return alert 'update your browser, dude' unless localStorage
+    data = JSON.parse localStorage.getItem APP_NAME
     data = data or {}
-
     data[name] = value
-
-    localStorage.setItem "#{APP_NAME}:#{name}", JSON.stringify value
+    localStorage.setItem APP_NAME, JSON.stringify data
 
 
   requestAccessToken: ->
-    @authorizeInProgress = yes
+    @setSettings 'authorize_in_progress', yes
     url = Vk.makeAuthorizeUrl() # call a class method
     # turns out we have not access to tabs api from content script :-(
     #chrome.tabs.create url: url, selected: yes
@@ -79,9 +73,7 @@ class App
   finishAuthorize: (url) ->
     for param in ['access_token', 'expires_in', 'user_id']
       setSettings param, url.getParam param
-
     @setSettings 'is_auth', yes
-
     console.log url
 
 
