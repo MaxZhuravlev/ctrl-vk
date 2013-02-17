@@ -32,18 +32,19 @@ window.onload = () ->
       @processClipboard item for item in items
 
   else
-    unless app.getSettings('authorize_in_progress') is yes
+    if app.getSettings('authorize_in_progress') is yes
+      if RegExp(REDIRECT_URI).test location.href
+        app.finishAuthorize location.href
+    else
       do app.requestAccessToken
 
 
 class App
   constructor: ->
     console.log 'app start'
-    @setSettings 'authorize_in_progress', no
-
 
   isAuth: ->
-    @getSettings('accessToken') and @getSettings('is_auth')
+    @getSettings('access_token') and @getSettings('is_auth')
 
 
   getSettings: (name) ->
@@ -64,15 +65,15 @@ class App
     url = Vk.makeAuthorizeUrl() # call a class method
     # turns out we have not access to tabs api from content script :-(
     #chrome.tabs.create url: url, selected: yes
-    #open url
+    open url
     console.log 'open new tab..'
 
 
   finishAuthorize: (url) ->
     for param in ['access_token', 'expires_in', 'user_id']
-      setSettings param, url.getParam param
+      @setSettings param, url.getParam param
     @setSettings 'is_auth', yes
-    console.log url
+    @setSettings 'authorize_in_progress', no
 
 
   processClipboard: (item) ->
