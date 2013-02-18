@@ -3,6 +3,7 @@ CLIENT_ID = 3427457
 AUTHORIZATION_URI = 'https://api.vkontakte.ru/oauth/authorize'
 REDIRECT_URI = 'http://api.vk.com/blank.html' # redirect uri for vk.com
 API_URI = 'https://api.vk.com' # api uri for vk.com
+storage = chrome.storage.local
 
 dev = yes
 
@@ -14,7 +15,7 @@ window.onload = () ->
 
   if app.isAuth()
     unless app.getSettings 'album_id'
-      ok = app.saveAlbumId() until ok is true
+      do app.saveAlbumId
 
     window.vk = new Vk
       client_id: CLIENT_ID
@@ -28,9 +29,9 @@ window.onload = () ->
       app.processClipboard item for item in event.clipboardData.items
 
   else
-    if app.getSettings('authorize_in_progress') is yes
-      if RegExp(REDIRECT_URI).test location.href
-        app.finishAuthorize location.href
+    if RegExp(REDIRECT_URI).test location.href
+      storage.set authorize_url: location.href
+      # here we pass request to background.js to close this tab
     else
       do app.startAuthorize
 
@@ -41,15 +42,17 @@ class App
 
 
   saveAlbumId: ->
-    if aid = prompt()
-      if aid.match(/\d{1,9}/)
-        @setSettings 'album_id', aid
-        yes
+    save = =>
+      if aid = prompt 'Введите id альбома в который будут загружаться изображения'
+        if aid.match(/\d{1,9}/)
+          @setSettings 'album_id', aid
+          yes
+        else
+          no
       else
         no
-    else
-      no
 
+    ok = save() until ok is true
 
   isAuth: ->
     @getSettings('access_token') and @getSettings('is_auth')
@@ -69,19 +72,22 @@ class App
 
 
   startAuthorize: ->
-    @setSettings 'authorize_in_progress', yes
-    url = Vk.makeAuthorizeUrl() # call a class method
-    # turns out we have not access to tabs api from content script :-(
-    #chrome.tabs.create url: url, selected: yes
-    open url
-    console.log 'open new tab..'
+    open Vk.makeAuthorizeUrl() # call a class method
+    console.log 'open new tab with auth url..'
+
+    intr_id = setInterval (->
+      storage.get 'authorize_url', (data) ->
+        app.finishAuthorize data.authorize_url
+        #storage.set authorize_url: null
+        clearInterval intr_id
+      ), 300
 
 
   finishAuthorize: (url) ->
     for param in ['access_token', 'expires_in', 'user_id']
       @setSettings param, url.getParam param
     @setSettings 'is_auth', yes
-    @setSettings 'authorize_in_progress', no
+    do @saveAlbumId unless @getSettings 'album_id'
 
 
   processClipboard: (item) ->
