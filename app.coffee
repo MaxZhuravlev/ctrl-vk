@@ -39,7 +39,7 @@ window.onload = () ->
       if RegExp(REDIRECT_URI).test location.href
         app.finishAuthorize location.href
     else
-      do app.requestAccessToken
+      do app.startAuthorize
 
 
 class App
@@ -75,7 +75,7 @@ class App
     localStorage.setItem APP_NAME, JSON.stringify data
 
 
-  requestAccessToken: ->
+  startAuthorize: ->
     @setSettings 'authorize_in_progress', yes
     url = Vk.makeAuthorizeUrl() # call a class method
     # turns out we have not access to tabs api from content script :-(
