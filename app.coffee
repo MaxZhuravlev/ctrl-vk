@@ -6,14 +6,13 @@ API_URI = 'https://api.vk.com' # api uri for vk.com
 
 dev = yes
 
-window.onload = () ->
-  window.app = new App dev
+unless dev
+  console.log = console.error = ->
 
-  # for background.js
-  app.setSettings 'REDIRECT_URI', REDIRECT_URI
+window.onload = () ->
+  window.app = new App
 
   if app.isAuth()
-
     unless app.getSettings 'album_id'
       ok = app.saveAlbumId() until ok is true
 
@@ -26,13 +25,7 @@ window.onload = () ->
       album_id: app.getSettings 'album_id'
 
     document.onpaste = (event) =>
-      items = event.clipboardData.items
-
-      # will give you the mime types
-      console.log JSON.stringify items
-
-      # what for?
-      app.processClipboard item for item in items
+      app.processClipboard item for item in event.clipboardData.items
 
   else
     if app.getSettings('authorize_in_progress') is yes
