@@ -14,6 +14,9 @@ window.onload = () ->
 
   if app.isAuth()
 
+    unless app.getSettings 'album_id'
+      ok = app.saveAlbumId() until ok is true
+
     window.vk = new Vk
       client_id: CLIENT_ID
       authorization_uri: AUTHORIZATION_URI
@@ -29,7 +32,7 @@ window.onload = () ->
       console.log JSON.stringify items
 
       # what for?
-      @processClipboard item for item in items
+      app.processClipboard item for item in items
 
   else
     if app.getSettings('authorize_in_progress') is yes
@@ -42,6 +45,18 @@ window.onload = () ->
 class App
   constructor: ->
     console.log 'app start'
+
+
+  saveAlbumId: ->
+    if aid = prompt()
+      if aid.match(/\d{1,9}/)
+        @setSettings 'album_id', aid
+        yes
+      else
+        no
+    else
+      no
+
 
   isAuth: ->
     @getSettings('access_token') and @getSettings('is_auth')
@@ -82,41 +97,32 @@ class App
       blob = item.getAsFile()
       reader = new FileReader
 
-      #например можно вставить картинку в страницу
-      #reader.onload = (event) ->
-      #console.log(event.target.result) // data url!
-      #img = document.createElement('img')
-      #img.src=event.target.result
-      #document.body.appendChild(img)
-
       reader.readAsDataURL blob
 
       # If you want to upload it instead, you could use readAsBinaryString,
       # or you could probably put it into an XHR using FormData
       # https://developer.mozilla.org/en/XMLHttpRequest/FormData
       reader.onload = (event) ->
-
-        # data url!
         console.log event.target.result
         binaryString = event.target.result
 
-        #vk.getUploadUrl (response) =>
-          #formData = new FormData
-          #image = formData.append 'photo', blob, 'photo.png'
-          #upload_url = response.upload_url
+        vk.getUploadUrl (data) =>
+          image = new FormData
+          image.append 'photo', binaryString, 'photo.png'
+          upload_url = data.response.upload_url
 
-          #vk.uploadImage image, to: upload_url, (response) =>
-            #album_id = getSettings 'album_id'
-            #vk.saveImage to: album_id, params, (response) =>
-              #if response.ok is yes
-                #alert 'fuck yeah!'
+          vk.uploadImage image, to: upload_url, (data) =>
+            vk.saveImage data, (data) =>
+              if data.error
+                alert data.error.error_msg
+              else
+                alert 'fuck yeah!'
 
+                button = $('.add_media_type_2_photo')[0]
+                console.log(button)
 
-        button = $('.add_media_type_2_photo')[0]
-        console.log(button)
-
-        if button.click()
-          console.log 'add_media_type_2_photo click'
+                if button.click()
+                  console.log 'add_media_type_2_photo click'
 
       reader.readAsBinaryString blob
 
@@ -132,7 +138,7 @@ class Vk
     return if method is 'auth'
       "#{base}?#{params}"
     else
-      "#{base}/#{method}?#{params}"
+      "#{base}/method/#{method}?#{params}"
 
 
   @makeAuthorizeUrl: ->
@@ -158,16 +164,31 @@ class Vk
 
 
   uploadImage: (image, url_param, callback) ->
-    @request url_param.url, image, 'POST', callback
+    @request url_param.to, image, 'POST', callback
 
 
-  saveImage: (album_id_prms, params, callback) ->
+  saveImage: (params, callback) ->
+    if typeof params is 'string'
+      params = JSON.parse params
+    album_id = parseInt app.getSettings 'album_id'
+    $.extend params,
+      caption: "#{Date.now()} #{Math.random().toFixed(3)}"
+      access_token: @access_token
+
+    url = @makeUrl @api_url, 'photos.save', params
+    @request url, null, 'GET', callback
 
 
   request: (url, data, type = 'GET', callback) ->
-    $.ajax
+    xhr = $.ajax
       url: url, data: data, type: type, success: callback
       contentType: off, processData: off, cache: off
+
+    xhr.fail () ->
+      console.error arguments
+
+    xhr.always () ->
+      console.log arguments
 
 
 String.prototype.getParam = (name) ->
