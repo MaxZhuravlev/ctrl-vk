@@ -31,7 +31,7 @@ window.onload = () ->
   else
     if RegExp(REDIRECT_URI).test location.href
       storage.set authorize_url: location.href
-      # here we pass request to background.js to close this tab
+      chrome.extension.sendMessage what_to_do: 'close_me'
     else
       do app.startAuthorize
 
