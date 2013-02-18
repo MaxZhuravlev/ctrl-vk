@@ -106,6 +106,8 @@ class App
         binaryString = event.target.result
 
         vk.getUploadUrl (data) =>
+          if data.error
+            return alert data.error.error_msg
           image = new FormData
           image.append 'photo', binaryString, 'photo.png'
           upload_url = data.response.upload_url
