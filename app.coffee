@@ -78,9 +78,10 @@ class App
 
     intr_id = setInterval (->
       storage.get 'authorize_url', (data) ->
-        app.finishAuthorize data.authorize_url
-        storage.set authorize_url: null
-        clearInterval intr_id
+        if data.authorize_url
+          app.finishAuthorize data.authorize_url
+          storage.set authorize_url: null
+          clearInterval intr_id
       ), 300
 
 
