@@ -42,6 +42,7 @@ class App
 
     do @bindPasteHandler
 
+
   saveAlbumId: ->
     save = =>
       if aid = prompt 'Введите id альбома в который будут загружаться изображения'
@@ -52,8 +53,8 @@ class App
           no
       else
         no
-
     ok = save() until ok is true
+
 
   isAuth: ->
     @getSettings('access_token')
@@ -115,7 +116,7 @@ class App
           if data.error
             return alert data.error.error_msg
           image = new FormData
-          image.append 'photo', binaryString, 'photo.png'
+          image.append 'photo', dataURIToBlob(binaryString), 'photo.png'
           upload_url = data.response.upload_url
 
           vk.uploadImage image, to: upload_url, (data) =>
@@ -123,15 +124,11 @@ class App
               if data.error
                 alert data.error.error_msg
               else
-                alert 'fuck yeah!'
-
-                button = $('.add_media_type_2_photo')[0]
-                console.log(button)
-
-                if button.click()
-                  console.log 'add_media_type_2_photo click'
+                $('.add_media_type_2_photo')[0].click()
+                setTimeout (-> $('.photos_choose_row a:first').click()), 1500
 
       reader.readAsBinaryString blob
+
 
 class Vk
   constructor: (params = {}) ->
@@ -206,3 +203,14 @@ String.prototype.getParam = (name) ->
     decodeURIComponent(results[1])
   else null
 
+
+`function dataURIToBlob (dataURI) {
+  var byteString = atob(dataURI.split(',')[1]);
+  var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+  var ab = [];
+
+  for (var i = 0; i < byteString.length; i++)
+    ab.push(byteString.charCodeAt(i));
+
+  return new Blob([new Uint8Array(ab)], { type: mimeString });
+};`
