@@ -14,20 +14,7 @@ window.onload = () ->
   window.app = new App
 
   if app.isAuth()
-    unless app.getSettings 'album_id'
-      do app.saveAlbumId
-
-    window.vk = new Vk
-      client_id: CLIENT_ID
-      authorization_uri: AUTHORIZATION_URI
-      redirect_uri: REDIRECT_URI
-      api_url: API_URI
-      access_token: app.getSettings 'access_token'
-      album_id: app.getSettings 'album_id'
-
-    document.onpaste = (event) =>
-      app.processClipboard item for item in event.clipboardData.items
-
+    do app.init
   else
     if RegExp(REDIRECT_URI).test location.href
       storage.set authorize_url: location.href
@@ -40,6 +27,20 @@ class App
   constructor: ->
     console.log 'app start'
 
+
+  init: ->
+    unless @getSettings 'album_id'
+      do @saveAlbumId
+
+    window.vk = new Vk
+      client_id: CLIENT_ID
+      authorization_uri: AUTHORIZATION_URI
+      redirect_uri: REDIRECT_URI
+      api_url: API_URI
+      access_token: app.getSettings 'access_token'
+      album_id: app.getSettings 'album_id'
+
+    do @bindPasteHandler
 
   saveAlbumId: ->
     save = =>
@@ -55,7 +56,7 @@ class App
     ok = save() until ok is true
 
   isAuth: ->
-    @getSettings('access_token') and @getSettings('is_auth')
+    @getSettings('access_token')
 
 
   getSettings: (name) ->
@@ -78,7 +79,7 @@ class App
     intr_id = setInterval (->
       storage.get 'authorize_url', (data) ->
         app.finishAuthorize data.authorize_url
-        #storage.set authorize_url: null
+        storage.set authorize_url: null
         clearInterval intr_id
       ), 300
 
@@ -86,8 +87,12 @@ class App
   finishAuthorize: (url) ->
     for param in ['access_token', 'expires_in', 'user_id']
       @setSettings param, url.getParam param
-    @setSettings 'is_auth', yes
-    do @saveAlbumId unless @getSettings 'album_id'
+    do @init
+
+
+  bindPasteHandler: ->
+    document.onpaste = (event) =>
+      app.processClipboard item for item in event.clipboardData.items
 
 
   processClipboard: (item) ->
