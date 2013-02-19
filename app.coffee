@@ -1,14 +1,10 @@
 APP_NAME = 'ctrl-vk'
 CLIENT_ID = 3427457
 AUTHORIZATION_URI = 'https://api.vkontakte.ru/oauth/authorize'
-REDIRECT_URI = 'http://api.vk.com/blank.html' # redirect uri for vk.com
-API_URI = 'https://api.vk.com' # api uri for vk.com
+REDIRECT_URI = 'http://api.vk.com/blank.html'
+API_URI = 'https://api.vk.com'
 storage = chrome.storage.local
-
 dev = yes
-
-unless dev
-  console.log = console.error = ->
 
 window.onload = () ->
   window.app = new App
@@ -24,11 +20,9 @@ window.onload = () ->
 
 
 class App
-  constructor: ->
+  init: ->
     console.log 'app start'
 
-
-  init: ->
     unless @getSettings 'album_id'
       do @saveAlbumId
 
@@ -57,13 +51,13 @@ class App
 
 
   isAuth: ->
-    @getSettings('access_token')
+    @getSettings 'access_token'
 
 
   getSettings: (name) ->
     data = JSON.parse localStorage.getItem APP_NAME
     return console.log "your settings (#{name}) are empty" unless data
-    return data[name]
+    data[name]
 
 
   setSettings: (name, value) ->
@@ -94,20 +88,14 @@ class App
 
   bindPasteHandler: ->
     document.onpaste = (event) =>
-      app.processClipboard item for item in event.clipboardData.items
+      app.upload item for item in event.clipboardData.items
 
 
-  processClipboard: (item) ->
-    if /^image/.test item['type']
-
+  upload: (item) ->
+    if /^image\/png/.test item['type']
       blob = item.getAsFile()
       reader = new FileReader
 
-      reader.readAsDataURL blob
-
-      # If you want to upload it instead, you could use readAsBinaryString,
-      # or you could probably put it into an XHR using FormData
-      # https://developer.mozilla.org/en/XMLHttpRequest/FormData
       reader.onload = (event) ->
         console.log event.target.result
         binaryString = event.target.result
@@ -115,6 +103,7 @@ class App
         vk.getUploadUrl (data) =>
           if data.error
             return alert data.error.error_msg
+
           image = new FormData
           image.append 'photo', dataURIToBlob(binaryString), 'photo.png'
           upload_url = data.response.upload_url
@@ -164,7 +153,7 @@ class Vk
       save_big: 1
 
     url = @makeUrl @api_url, 'photos.getUploadServer', params
-    @request url, null, 'GET', callback
+    @request url, off, 'GET', callback
 
 
   uploadImage: (image, url_param, callback) ->
@@ -172,15 +161,14 @@ class Vk
 
 
   saveImage: (params, callback) ->
-    if typeof params is 'string'
-      params = JSON.parse params
-    album_id = parseInt app.getSettings 'album_id'
+    params = JSON.parse params if typeof params is 'string'
+
     $.extend params,
       caption: "#{Date.now()} #{Math.random().toFixed(3)}"
       access_token: @access_token
 
     url = @makeUrl @api_url, 'photos.save', params
-    @request url, null, 'GET', callback
+    @request url, off, 'GET', callback
 
 
   request: (url, data, type = 'GET', callback) ->
@@ -194,6 +182,8 @@ class Vk
     xhr.always () ->
       console.log arguments
 
+unless dev
+  console.log = console.error = ->
 
 String.prototype.getParam = (name) ->
   reg = "[\\?&#]#{name}=([A-z,0-9]*)"
@@ -204,13 +194,8 @@ String.prototype.getParam = (name) ->
   else null
 
 
-`function dataURIToBlob (dataURI) {
-  var byteString = atob(dataURI.split(',')[1]);
-  var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-  var ab = [];
-
-  for (var i = 0; i < byteString.length; i++)
-    ab.push(byteString.charCodeAt(i));
-
-  return new Blob([new Uint8Array(ab)], { type: mimeString });
-};`
+window.dataURIToBlob = (dataURI) ->
+  byteString = atob dataURI.split(',')[1]
+  ab = []; ab.push byteString.charCodeAt key for _ , key in byteString
+  mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+  new Blob [new Uint8Array ab], type: mimeString
