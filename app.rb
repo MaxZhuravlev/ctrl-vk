@@ -2,7 +2,6 @@ require 'sinatra'
 require 'base64'
 require 'json'
 require 'open-uri'
-require 'pry'
 
 get '/' do
   url = request.env['QUERY_STRING'].split('=').last
@@ -11,7 +10,12 @@ get '/' do
 
   if url
     if url =~ /\.gif$/
-      resp[:response] ='data:image/gif;base64,' + Base64.encode64(open(url) { |io| io.read })
+      file = open url
+      if file.size > 1024*1024*5 # 5 mb
+        resp[:error] = "image too big, limit is 5 megabytes"
+      else
+        resp[:response] ='data:image/gif;base64,' + Base64.encode64(file.read)
+      end
     else
       resp[:error] = "it is not gif image, therefore go use your computer, dude!"
     end
