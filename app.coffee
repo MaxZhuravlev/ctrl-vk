@@ -116,7 +116,7 @@ class App
                 $('.add_media_type_2_photo')[0].click()
                 setTimeout (-> $('.photos_choose_row a:first').click()), 1500
 
-      reader.readAsBinaryString blob
+      reader.readAsDataURL blob
 
 
 class Vk
