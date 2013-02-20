@@ -113,6 +113,7 @@ class App
               if data.error
                 alert data.error.error_msg
               else
+                $("#im_add_media_link").click();
                 $('.add_media_type_2_photo')[0].click()
                 setTimeout (-> $('.photos_choose_row a:first').click()), 1500
 
