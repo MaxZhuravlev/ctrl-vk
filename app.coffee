@@ -194,8 +194,13 @@ String.prototype.getParam = (name) ->
   else null
 
 
-window.dataURIToBlob = (dataURI) ->
-  byteString = atob dataURI.split(',')[1]
-  ab = []; ab.push byteString.charCodeAt key for _ , key in byteString
-  mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
-  new Blob [new Uint8Array ab], type: mimeString
+`function dataURIToBlob (dataURI) {
+  var byteString = atob(dataURI.split(',')[1]);
+  var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+  var ab = [];
+
+  for (var i = 0; i < byteString.length; i++)
+    ab.push(byteString.charCodeAt(i));
+
+  return new Blob([new Uint8Array(ab)], { type: mimeString });
+};`
