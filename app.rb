@@ -4,6 +4,8 @@ require 'json'
 require 'open-uri'
 
 get '/' do
+  content_type 'application/json'
+
   url = request.env['QUERY_STRING'].split('=').last
 
   resp = Hash.new
