@@ -119,7 +119,7 @@ class App
                 x = photo.src_small.match(/[a-zA-Z0-9]+\/[a-zA-Z0-9_]+(?=\.jpg)/)[0]
                 mini = JSON.stringify temp: base: base, x_: [x, 50, 50]
 
-                photodata = JSON.stringify
+                photo_data = JSON.stringify
                   type: 'photo'
                   id: "#{photo.owner_id}_#{photo.pid}"
                   mini: mini
@@ -128,18 +128,18 @@ class App
                   hash: ''
 
                 do $('#im_add_media_link').click
-                #block.css 'display', 'none'
+                do $('#ctrl-vk').remove
 
-                inline_js = "
-                  var photo = JSON.parse(event.target.dataset.photodata);
-                  window.cur.chooseMedia(photo.type,  photo.id, [photo.src_big, photo.src, photo.hash, photo.mini]);
-                "
+                inline_js = '
+                  var photo = JSON.parse(event.target.dataset.photo);
+                  window.cur.chooseMedia(photo.type,  photo.id, [photo.src_big, photo.src, photo.hash, photo.mini]);'
 
-                block = $("<a data-photodata='#{photodata}' onclick='#{inline_js}'>hello from ctrl-vk</a>")
+                block = $("<a data-photo='#{photo_data}' onclick='#{inline_js}' id='ctrl-vk'>hello from ctrl-vk</a>")
+                block.css 'display', 'none'
 
                 $('#side_bar').append block
 
-                setTimeout (-> do block.click), 777
+                do block.click
 
       reader.readAsDataURL blob
 
