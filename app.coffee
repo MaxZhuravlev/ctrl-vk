@@ -116,7 +116,7 @@ class App
                 photo = data.response[0]
 
                 base = photo.src_small.match(/http:\/\/cs\d+\.userapi\.com\/v\d+\//)[0]
-                x = photo.src_small.match(/[a-zA-Z0-9]+\/[a-zA-Z0-9]+(?=\.jpg)/)[0]
+                x = photo.src_small.match(/[a-zA-Z0-9]+\/[a-zA-Z0-9_]+(?=\.jpg)/)[0]
                 mini = JSON.stringify temp: base: base, x_: [x, 50, 50]
 
                 photodata = JSON.stringify
