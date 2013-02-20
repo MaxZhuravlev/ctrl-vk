@@ -113,19 +113,29 @@ class App
               if data.error
                 alert data.error.error_msg
               else
-                photo = JSON.stringify data.response[0]
+                photo = data.response[0]
+
+                base = photo.src_small.match(/http:\/\/cs\d+\.userapi\.com\/v\d+\//)[0]
+                x = photo.src_small.match(/[a-zA-Z0-9]+\/[a-zA-Z0-9]+(?=\.jpg)/)[0]
+                mini = JSON.stringify temp: base: base, x_: [x, 50, 50]
+
+                photodata = JSON.stringify
+                  type: 'photo'
+                  id: "#{photo.owner_id}_#{photo.pid}"
+                  mini: mini
+                  src_big: photo.src_big
+                  src: photo.src
+                  hash: ''
 
                 do $('#im_add_media_link').click
                 #block.css 'display', 'none'
 
                 inline_js = "
-                  var photo = JSON.parse(event.target.dataset.photo);
-                  var base =  photo.src_small.match(/http:\/\/cs\d+\.userapi\.com\/v\d+\//)[0];
-                  var x =     photo.src_small.match(/[a-zA-Z0-9]+\/[a-zA-Z0-9]+(?=\.jpg)/)[0];
-                  var mini =  JSON.stringify({ temp: { base: base, x_: [x, 50, 50] } });
-                  window.cur.chooseMedia('photo',  photo.owner_id + '_' + photo.pid, [photo.src_big, photo.src, '', mini]);"
+                  var photo = JSON.parse(event.target.dataset.photodata);
+                  window.cur.chooseMedia(photo.type,  photo.id, [photo.src_big, photo.src, photo.hash, photo.mini]);
+                "
 
-                block = $("<a data-photo='#{photo}' onclick='#{inline_js}'>hello from ctrl-vk</a>")
+                block = $("<a data-photodata='#{photodata}' onclick='#{inline_js}'>hello from ctrl-vk</a>")
 
                 $('#side_bar').append block
 
