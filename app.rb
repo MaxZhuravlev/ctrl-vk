@@ -12,11 +12,16 @@ get '/' do
 
   if url
     if url =~ /\.gif$/
-      file = open url
-      if file.size > 1024*1024*5 # 5 mb
-        resp[:error] = "image too big, limit is 5 megabytes"
+      begin
+        file = open url
+      rescue
+        resp[:error] = 'internal error'
       else
-        resp[:response] ='data:image/gif;base64,' + Base64.encode64(file.read)
+        if file.size > 1024*1024*5 # 5 mb
+          resp[:error] = "image too big, limit is 5 megabytes"
+        else
+          resp[:response] ='data:image/gif;base64,' + Base64.encode64(file.read)
+        end
       end
     else
       resp[:error] = "it is not gif image, therefore go use your computer, dude!"
