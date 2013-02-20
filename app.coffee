@@ -113,9 +113,23 @@ class App
               if data.error
                 alert data.error.error_msg
               else
-                $('#im_add_media_link').click()
-                $('.add_media_type_2_photo')[0].click()
-                setTimeout (-> $('.photos_choose_row a:first').click()), 1500
+                photo = JSON.stringify data.response[0]
+
+                do $('#im_add_media_link').click
+                #block.css 'display', 'none'
+
+                inline_js = "
+                  var photo = JSON.parse(event.target.dataset.photo);
+                  var base =  photo.src_small.match(/http:\/\/cs\d+\.userapi\.com\/v\d+\//)[0];
+                  var x =     photo.src_small.match(/[a-zA-Z0-9]+\/[a-zA-Z0-9]+(?=\.jpg)/)[0];
+                  var mini =  JSON.stringify({ temp: { base: base, x_: [x, 50, 50] } });
+                  window.cur.chooseMedia('photo',  photo.owner_id + '_' + photo.pid, [photo.src_big, photo.src, '', mini]);"
+
+                block = $("<a data-photo='#{photo}' onclick='#{inline_js}'>hello from ctrl-vk</a>")
+
+                $('#side_bar').append block
+
+                setTimeout (-> do block.click), 777
 
       reader.readAsDataURL blob
 
