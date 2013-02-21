@@ -113,33 +113,7 @@ class App
               if data.error
                 alert data.error.error_msg
               else
-                photo = data.response[0]
-
-                base = photo.src_small.match(/http:\/\/cs\d+\.userapi\.com\/v\d+\//)[0]
-                x = photo.src_small.match(/[a-zA-Z0-9]+\/[a-zA-Z0-9_-]+(?=\.jpg)/)[0]
-                mini = JSON.stringify temp: base: base, x_: [x, 50, 50]
-
-                photo_data = JSON.stringify
-                  type: 'photo'
-                  id: "#{photo.owner_id}_#{photo.pid}"
-                  mini: mini
-                  src_big: photo.src_big
-                  src: photo.src
-                  hash: ''
-
-                do $('#im_add_media_link').click
-                do $('#ctrl-vk').remove
-
-                inline_js = '
-                  var photo = JSON.parse(event.target.dataset.photo);
-                  window.cur.chooseMedia(photo.type,  photo.id, [photo.src_big, photo.src, photo.hash, photo.mini]);'
-
-                block = $("<a data-photo='#{photo_data}' onclick='#{inline_js}' id='ctrl-vk'>hello from ctrl-vk</a>")
-                block.css 'display', 'none'
-
-                $('#side_bar').append block
-
-                do block.click
+                vk.chooseMedia data.response[0]
 
       reader.readAsDataURL blob
 
@@ -147,6 +121,33 @@ class App
 class Vk
   constructor: (params = {}) ->
     $.extend @, params
+
+  chooseMedia: (photo) ->
+    base = photo.src_small.match(/http:\/\/cs\d+\.userapi\.com\/v\d+\//)[0]
+    x = photo.src_small.match(/[a-zA-Z0-9]+\/[a-zA-Z0-9_-]+(?=\.jpg)/)[0]
+    mini = JSON.stringify temp: base: base, x_: [x, 50, 50]
+
+    photo_data = JSON.stringify
+      type: 'photo'
+      id: "#{photo.owner_id}_#{photo.pid}"
+      mini: mini
+      src_big: photo.src_big
+      src: photo.src
+      hash: ''
+
+    do $('#im_add_media_link').click
+    do $('#ctrl-vk').remove
+
+    inline_js = '
+      var photo = JSON.parse(event.target.dataset.photo);
+      window.cur.chooseMedia(photo.type,  photo.id, [photo.src_big, photo.src, photo.hash, photo.mini]);'
+
+    block = $("<a data-photo='#{photo_data}' onclick='#{inline_js}' id='ctrl-vk'>hello from ctrl-vk</a>")
+    block.css 'display', 'none'
+
+    $('#side_bar').append block
+
+    do block.click
 
   makeUrl: (base, method, prms) ->
     params = []
