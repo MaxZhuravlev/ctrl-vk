@@ -164,7 +164,7 @@ class Vk
   @makeAuthorizeUrl: ->
     params =
       client_id: CLIENT_ID
-      scope: 'photos'
+      scope: 'photos,offline'
       display: 'popup'
       redirect_uri: REDIRECT_URI
       response_type: 'token'
