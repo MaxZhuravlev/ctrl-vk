@@ -136,6 +136,7 @@ class Vk
       hash: ''
 
     do $('#im_add_media_link').click
+    do $('#im_user_holder').click
     do $('#ctrl-vk').remove
 
     inline_js = '
