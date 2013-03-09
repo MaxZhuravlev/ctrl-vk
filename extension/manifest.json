@@ -1,6 +1,6 @@
 {
   "name": "ctrl-vk",
-  "version": "0.5.8",
+  "version": "0.6.0",
   "manifest_version": 2,
   "description": "Chrome extension for ctrl+v insertion of images to vk.com",
 
