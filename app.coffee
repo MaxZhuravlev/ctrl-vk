@@ -113,9 +113,7 @@ class App
               if data.error
                 alert data.error.error_msg
               else
-                $("#im_add_media_link").click();
-                $('.add_media_type_2_photo')[0].click()
-                setTimeout (-> $('.photos_choose_row a:first').click()), 1500
+                vk.chooseMedia data.response[0]
 
       reader.readAsDataURL blob
 
@@ -123,6 +121,34 @@ class App
 class Vk
   constructor: (params = {}) ->
     $.extend @, params
+
+  chooseMedia: (photo) ->
+    base = photo.src_small.match(/http:\/\/cs\d+\.(userapi\.com|vk.me)\/v\d+\//)[0]
+    x = photo.src_small.match(/[a-zA-Z0-9]+\/[a-zA-Z0-9_-]+(?=\.jpg)/)[0]
+    mini = JSON.stringify temp: base: base, x_: [x, 50, 50]
+
+    photo_data = JSON.stringify
+      type: 'photo'
+      id: "#{photo.owner_id}_#{photo.pid}"
+      mini: mini
+      src_big: photo.src_big
+      src: photo.src
+      hash: ''
+
+    do $('#im_add_media_link').click
+    do $('#im_user_holder').click
+    do $('#ctrl-vk').remove
+
+    inline_js = '
+      var photo = JSON.parse(event.target.dataset.photo);
+      window.cur.chooseMedia(photo.type,  photo.id, [photo.src_big, photo.src, photo.hash, photo.mini]);'
+
+    block = $("<a data-photo='#{photo_data}' onclick='#{inline_js}' id='ctrl-vk'>hello from ctrl-vk</a>")
+    block.css 'display', 'none'
+
+    $('#side_bar').append block
+
+    do block.click
 
   makeUrl: (base, method, prms) ->
     params = []
@@ -138,7 +164,7 @@ class Vk
   @makeAuthorizeUrl: ->
     params =
       client_id: CLIENT_ID
-      scope: 'photos'
+      scope: 'photos,offline'
       display: 'popup'
       redirect_uri: REDIRECT_URI
       response_type: 'token'
@@ -195,13 +221,8 @@ String.prototype.getParam = (name) ->
   else null
 
 
-`function dataURIToBlob (dataURI) {
-  var byteString = atob(dataURI.split(',')[1]);
-  var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-  var ab = [];
-
-  for (var i = 0; i < byteString.length; i++)
-    ab.push(byteString.charCodeAt(i));
-
-  return new Blob([new Uint8Array(ab)], { type: mimeString });
-};`
+window.dataURIToBlob = (dataURI) ->
+  byteString = atob dataURI.split(',')[1]
+  ab = []; ab.push byteString.charCodeAt key for _ , key in byteString
+  mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+  new Blob [new Uint8Array ab], type: mimeString

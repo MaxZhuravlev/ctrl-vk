@@ -1,0 +1,14 @@
+{
+    "album_link": {
+        "message": "Ссылка на альбом, в который будут загружаться фотографии по ctrl+v (альбом может быть скрытым):",
+        "description": ""
+    },
+    "save_button": {
+        "message": "Сохранить",
+        "description": ""
+    },
+    "saved": {
+        "message": "Настройки сохранены!",
+        "description": ""
+    }
+}

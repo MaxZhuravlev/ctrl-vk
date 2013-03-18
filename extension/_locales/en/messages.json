@@ -1,0 +1,14 @@
+{
+    "album_link": {
+        "message": "Link to album, where your pasted images will be stored by default (album may be hidden):",
+        "description": ""
+    },
+    "save_button": {
+        "message": "Save",
+        "description": ""
+    },
+    "saved": {
+        "message": "Options saved!",
+        "description": ""
+    }
+}

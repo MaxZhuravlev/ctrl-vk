@@ -1,6 +1,6 @@
 {
   "name": "ctrl-vk",
-  "version": "0.4.0",
+  "version": "0.6.0",
   "manifest_version": 2,
   "description": "Chrome extension for ctrl+v insertion of images to vk.com",
 
@@ -28,5 +28,8 @@
   "background": {
     "persistent": false,
     "scripts": ["javascripts/background.js"]
-  }
+  },
+
+  "options_page": "options.html",
+  "default_locale":"ru"
 }
