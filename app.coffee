@@ -3,7 +3,8 @@ CLIENT_ID = 3427457
 AUTHORIZATION_URI = 'https://api.vkontakte.ru/oauth/authorize'
 REDIRECT_URI = 'http://api.vk.com/blank.html'
 API_URI = 'https://api.vk.com'
-storage = chrome.storage.local
+OPTIONS_URI = 'chrome-extension://.*/options.html'
+syncStorage = chrome.storage.sync
 dev = yes
 
 window.onload = () ->
@@ -12,19 +13,47 @@ window.onload = () ->
   if app.isAuth()
     do app.init
   else
+    # this is mini router, ok?
     if RegExp(REDIRECT_URI).test location.href
-      storage.set authorize_url: location.href
+      syncStorage.set authorize_url: location.href
       chrome.extension.sendMessage what_to_do: 'close_me'
+    else if RegExp(OPTIONS_URI).test location.href
+      do app.optionsPage
     else
       do app.startAuthorize
 
 
 class App
+
+  optionsPage: ->
+    console.log 'options page'
+
+    syncStorage.get ['album_link', 'album_id'], (items) ->
+      console.log items
+      return unless items.album_link
+      $('#album_link').val items.album_link
+
+    $('#save_button').click ->
+      syncStorage.set
+        album_link: $('#album_link').val()
+        album_id: $("#album_link").val().match(/album\d+_(\d+)/)[1]
+      , ->
+        $('#status').html chrome.i18n.getMessage 'saved'
+        console.log $('#status').html()
+        setTimeout (->
+          $('#status').html ''
+        ), 750
+
+    $('#album_link_span').html chrome.i18n.getMessage 'album_link'
+    $('#save_button').html chrome.i18n.getMessage 'save_button'
+
+
   init: ->
     console.log 'app start'
 
+    #TODO: автоматическое создание дефолтового шаблона, если шаблон не задан
     unless @getSettings 'album_id'
-      do @saveAlbumId
+      return do @saveAlbumId
 
     window.vk = new Vk
       client_id: CLIENT_ID
@@ -34,20 +63,19 @@ class App
       access_token: app.getSettings 'access_token'
       album_id: app.getSettings 'album_id'
 
-    do @bindPasteHandler
+    do app.bindPasteHandler
 
 
   saveAlbumId: ->
-    save = =>
-      if aid = prompt 'Введите id альбома в который будут загружаться изображения'
-        if aid.match(/\d{1,9}/)
-          @setSettings 'album_id', aid
-          yes
-        else
-          no
+    syncStorage.get ['album_link', 'album_id'], (items) =>
+      console.log items # FIXME there is no album_link property
+
+      if items.album_id
+        @setSettings 'album_id', items.album_id
       else
-        no
-    ok = save() until ok is true
+        alert 'пожалуйста задайте album id'
+        # TODO redirect to settings page
+        # now we should open settings page manually
 
 
   isAuth: ->
@@ -72,10 +100,10 @@ class App
     console.log 'open new tab with auth url..'
 
     intr_id = setInterval (->
-      storage.get 'authorize_url', (data) ->
+      syncStorage.get 'authorize_url', (data) ->
         if data.authorize_url
           app.finishAuthorize data.authorize_url
-          storage.set authorize_url: null
+          syncStorage.set authorize_url: null
           clearInterval intr_id
       ), 300
 
