@@ -3,86 +3,85 @@ CLIENT_ID = 3427457
 AUTHORIZATION_URI = 'https://api.vkontakte.ru/oauth/authorize'
 REDIRECT_URI = 'http://api.vk.com/blank.html'
 API_URI = 'https://api.vk.com'
-storage = chrome.storage.local
+localStorage = chrome.storage.local
+syncStorage = chrome.storage.sync
 dev = yes
 
 window.onload = () ->
   window.app = new App
 
-  if app.isAuth()
-    do app.init
+  if RegExp('chrome-extension://.*/options.html').test location.href
+    do app.optionsPage
   else
-    if RegExp(REDIRECT_URI).test location.href
-      storage.set authorize_url: location.href
-      chrome.extension.sendMessage what_to_do: 'close_me'
-    else
-      do app.startAuthorize
+    do app.init
 
 
 class App
+
+  optionsPage: ->
+    console.log 'options page'
+    syncStorage.get ["album_link", "album_id"], (items) ->
+      console.log items
+      return  unless items.album_link
+      $("#album_link").val items.album_link
+    document.querySelector("#save_button").addEventListener "click", ->
+      matched_album_id = $("#album_link").val().match(/album\d+_(\d+)/)[1]
+      syncStorage.set
+        album_link: $("#album_link").val()
+        album_id: matched_album_id
+      , ->
+        status = document.getElementById("status")
+        status.innerHTML = chrome.i18n.getMessage("saved")
+        setTimeout (->
+          status.innerHTML = ""
+        ), 750
+    document.getElementById("album_link_span").innerHTML = chrome.i18n.getMessage("album_link");
+    document.getElementById("save_button").innerHTML = chrome.i18n.getMessage("save_button");
+
   init: ->
     console.log 'app start'
 
-    unless @getSettings 'album_id'
-      do @saveAlbumId
+    #todo: автоматическое создание дефолтового шаблона, если шаблон не задан
+    #unless @getSettings 'album_id'
+    #  do @saveAlbumId
 
-    window.vk = new Vk
-      client_id: CLIENT_ID
-      authorization_uri: AUTHORIZATION_URI
-      redirect_uri: REDIRECT_URI
-      api_url: API_URI
-      access_token: app.getSettings 'access_token'
-      album_id: app.getSettings 'album_id'
-
-    do @bindPasteHandler
-
-
-  saveAlbumId: ->
-    save = =>
-      if aid = prompt 'Введите id альбома в который будут загружаться изображения'
-        if aid.match(/\d{1,9}/)
-          @setSettings 'album_id', aid
-          yes
+    syncStorage.get ["album_id", "access_token"], (items) ->
+      console.log items
+      unless items.access_token
+        if RegExp(REDIRECT_URI).test location.href
+          localStorage.set authorize_url: location.href
+          chrome.extension.sendMessage what_to_do: 'close_me'
         else
-          no
-      else
-        no
-    ok = save() until ok is true
+          do app.startAuthorize
+      unless items.album_id
+        alert "пожалуйста задайте album id";
+      window.vk = new Vk
+        client_id: CLIENT_ID
+        authorization_uri: AUTHORIZATION_URI
+        redirect_uri: REDIRECT_URI
+        api_url: API_URI
+        access_token: items.album_id
+        album_id: items.access_token
 
-
-  isAuth: ->
-    @getSettings 'access_token'
-
-
-  getSettings: (name) ->
-    data = JSON.parse localStorage.getItem APP_NAME
-    return console.log "your settings (#{name}) are empty" unless data
-    data[name]
-
-
-  setSettings: (name, value) ->
-    data = JSON.parse localStorage.getItem APP_NAME
-    data = data or {}
-    data[name] = value
-    localStorage.setItem APP_NAME, JSON.stringify data
-
+      do app.bindPasteHandler
 
   startAuthorize: ->
     open Vk.makeAuthorizeUrl() # call a class method
     console.log 'open new tab with auth url..'
 
     intr_id = setInterval (->
-      storage.get 'authorize_url', (data) ->
+      localStorage.get 'authorize_url', (data) ->
         if data.authorize_url
           app.finishAuthorize data.authorize_url
-          storage.set authorize_url: null
+          localStorage.set authorize_url: null
           clearInterval intr_id
       ), 300
 
 
   finishAuthorize: (url) ->
     for param in ['access_token', 'expires_in', 'user_id']
-      @setSettings param, url.getParam param
+      syncStorage.set
+        param: url.getParam param
     do @init
 
 
