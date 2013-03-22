@@ -3,85 +3,114 @@ CLIENT_ID = 3427457
 AUTHORIZATION_URI = 'https://api.vkontakte.ru/oauth/authorize'
 REDIRECT_URI = 'http://api.vk.com/blank.html'
 API_URI = 'https://api.vk.com'
-localStorage = chrome.storage.local
+OPTIONS_URI = 'chrome-extension://.*/options.html'
 syncStorage = chrome.storage.sync
 dev = yes
 
 window.onload = () ->
   window.app = new App
 
-  if RegExp('chrome-extension://.*/options.html').test location.href
-    do app.optionsPage
-  else
+  if app.isAuth()
     do app.init
+  else
+    # this is mini router, ok?
+    if RegExp(REDIRECT_URI).test location.href
+      syncStorage.set authorize_url: location.href
+      chrome.extension.sendMessage what_to_do: 'close_me'
+    else if RegExp(OPTIONS_URI).test location.href
+      do app.optionsPage
+    else
+      do app.startAuthorize
 
 
 class App
 
   optionsPage: ->
     console.log 'options page'
-    syncStorage.get ["album_link", "album_id"], (items) ->
+
+    syncStorage.get ['album_link', 'album_id'], (items) ->
       console.log items
-      return  unless items.album_link
-      $("#album_link").val items.album_link
-    document.querySelector("#save_button").addEventListener "click", ->
-      matched_album_id = $("#album_link").val().match(/album\d+_(\d+)/)[1]
+      return unless items.album_link
+      $('#album_link').val items.album_link
+
+    $('#save_button').click ->
       syncStorage.set
-        album_link: $("#album_link").val()
-        album_id: matched_album_id
+        album_link: $('#album_link').val()
+        album_id: $("#album_link").val().match(/album\d+_(\d+)/)[1]
       , ->
-        status = document.getElementById("status")
-        status.innerHTML = chrome.i18n.getMessage("saved")
+        $('#status').html chrome.i18n.getMessage 'saved'
+        console.log $('#status').html()
         setTimeout (->
-          status.innerHTML = ""
+          $('#status').html ''
         ), 750
-    document.getElementById("album_link_span").innerHTML = chrome.i18n.getMessage("album_link");
-    document.getElementById("save_button").innerHTML = chrome.i18n.getMessage("save_button");
+
+    $('#album_link_span').html chrome.i18n.getMessage 'album_link'
+    $('#save_button').html chrome.i18n.getMessage 'save_button'
+
 
   init: ->
     console.log 'app start'
 
-    #todo: автоматическое создание дефолтового шаблона, если шаблон не задан
-    #unless @getSettings 'album_id'
-    #  do @saveAlbumId
+    #TODO: автоматическое создание дефолтового шаблона, если шаблон не задан
+    unless @getSettings 'album_id'
+      return do @saveAlbumId
 
-    syncStorage.get ["album_id", "access_token"], (items) ->
-      console.log items
-      unless items.access_token
-        if RegExp(REDIRECT_URI).test location.href
-          localStorage.set authorize_url: location.href
-          chrome.extension.sendMessage what_to_do: 'close_me'
-        else
-          do app.startAuthorize
-      unless items.album_id
-        alert "пожалуйста задайте album id";
-      window.vk = new Vk
-        client_id: CLIENT_ID
-        authorization_uri: AUTHORIZATION_URI
-        redirect_uri: REDIRECT_URI
-        api_url: API_URI
-        access_token: items.album_id
-        album_id: items.access_token
+    window.vk = new Vk
+      client_id: CLIENT_ID
+      authorization_uri: AUTHORIZATION_URI
+      redirect_uri: REDIRECT_URI
+      api_url: API_URI
+      access_token: app.getSettings 'access_token'
+      album_id: app.getSettings 'album_id'
 
-      do app.bindPasteHandler
+    do app.bindPasteHandler
+
+
+  saveAlbumId: ->
+    syncStorage.get ['album_link', 'album_id'], (items) =>
+      console.log items # FIXME there is no album_link property
+
+      if items.album_id
+        @setSettings 'album_id', items.album_id
+      else
+        alert 'пожалуйста задайте album id'
+        # TODO redirect to settings page
+        # now we should open settings page manually
+
+
+  isAuth: ->
+    @getSettings 'access_token'
+
+
+  getSettings: (name) ->
+    data = JSON.parse localStorage.getItem APP_NAME
+    return console.log "your settings (#{name}) are empty" unless data
+    data[name]
+
+
+  setSettings: (name, value) ->
+    data = JSON.parse localStorage.getItem APP_NAME
+    data = data or {}
+    data[name] = value
+    localStorage.setItem APP_NAME, JSON.stringify data
+
 
   startAuthorize: ->
     open Vk.makeAuthorizeUrl() # call a class method
     console.log 'open new tab with auth url..'
 
     intr_id = setInterval (->
-      localStorage.get 'authorize_url', (data) ->
+      syncStorage.get 'authorize_url', (data) ->
         if data.authorize_url
           app.finishAuthorize data.authorize_url
-          localStorage.set authorize_url: null
+          syncStorage.set authorize_url: null
           clearInterval intr_id
       ), 300
 
 
   finishAuthorize: (url) ->
     for param in ['access_token', 'expires_in', 'user_id']
-      syncStorage.set
-        param: url.getParam param
+      @setSettings param, url.getParam param
     do @init
 
 
