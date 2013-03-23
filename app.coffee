@@ -50,6 +50,7 @@ class App
           api_url: API_URI
           access_token: items.access_token_for_creating_album
 
+
         vk.createAlbum (data) ->
           aid = data.response.aid
           owner_id = data.response.owner_id
@@ -91,7 +92,7 @@ class App
       if items.album_id
         @setSettings 'album_id', items.album_id
       else
-        alert 'пожалуйста задайте album id'
+        alert chrome.i18n.getMessage 'please_set_album_link'
         # TODO redirect to settings page
         # now we should open settings page manually
 
@@ -111,6 +112,9 @@ class App
     data = data or {}
     data[name] = value
     localStorage.setItem APP_NAME, JSON.stringify data
+    syncStorage.set APP_NAME: data
+    console.log 'syncStorage', data
+    alert('syncStorage')
 
 
   startAuthorize: ->
@@ -270,7 +274,7 @@ class Vk
     params =
       access_token: @access_token
       title: 'ctrl-vk'
-      description: 'this is description album'
+      description: chrome.i18n.getMessage 'auto_album_description'
       comment_privacy: 3
       privacy: 3
 
