@@ -4,26 +4,41 @@ AUTHORIZATION_URI = 'https://api.vkontakte.ru/oauth/authorize'
 REDIRECT_URI = 'http://api.vk.com/blank.html'
 API_URI = 'https://api.vk.com'
 OPTIONS_URI = 'chrome-extension://.*/options.html'
-syncStorage = chrome.storage.sync
+#todo m1 вернуть обратно sync после отладки
+#syncStorage = chrome.storage.sync
+syncStorage = chrome.storage.local
 dev = yes
 
 window.onload = () ->
   window.app = new App
 
-  if app.isAuth()
-    if RegExp(OPTIONS_URI).test location.href
-      do app.optionsPage
+  syncStorage.get APP_NAME, (items) =>
+    console.log items[APP_NAME]
+    result=items[APP_NAME]
+
+    if(result!=undefined)
+      app.options = result
+
+    if app.isAuth()
+      if RegExp(OPTIONS_URI).test location.href
+        #1.1
+        do app.optionsPage
+      else
+        #1.2
+        do app.init
     else
-      do app.init
-  else
-    if RegExp(REDIRECT_URI).test location.href
-      syncStorage.set authorize_url: location.href
-      chrome.extension.sendMessage what_to_do: 'close_me'
-    else
-      do app.startAuthorize
+      if RegExp(REDIRECT_URI).test location.href
+        #2.1
+        syncStorage.set authorize_url: location.href
+        chrome.extension.sendMessage what_to_do: 'close_me'
+      else
+        #2.2
+        do app.startAuthorize
 
 
 class App
+
+  options: {}
 
   optionsPage: ->
     console.log 'options page'
@@ -42,25 +57,24 @@ class App
         console.log $('#status').html()
         setTimeout (->
           $('#status').html ''
-        ), 750
+        ), 7500
 
     $('#auto_button').click ->
-      syncStorage.get 'access_token_for_creating_album', (items) ->
-        window.vk = new Vk
-          api_url: API_URI
-          access_token: items.access_token_for_creating_album
+      window.vk = new Vk
+        api_url: API_URI
+        access_token: app.options.access_token
 
 
-        vk.createAlbum (data) ->
-          aid = data.response.aid
-          owner_id = data.response.owner_id
-          album_link = "http://vk.com/album#{owner_id}_#{aid}"
+      vk.createAlbum (data) ->
+        aid = data.response.aid
+        owner_id = data.response.owner_id
+        album_link = "http://vk.com/album#{owner_id}_#{aid}"
 
-          syncStorage.set
-            album_link: album_link
-            album_id: aid
+        syncStorage.set
+          album_link: album_link
+          album_id: aid
 
-          do location.reload
+        do location.reload
 
 
     $('#album_link_span').html chrome.i18n.getMessage 'album_link'
@@ -71,7 +85,7 @@ class App
     console.log 'app start'
 
     #TODO: автоматическое создание дефолтового шаблона, если шаблон не задан
-    unless @getSettings 'album_id'
+    unless app.options.album_id
       return do @saveAlbumId
 
     window.vk = new Vk
@@ -79,8 +93,8 @@ class App
       authorization_uri: AUTHORIZATION_URI
       redirect_uri: REDIRECT_URI
       api_url: API_URI
-      access_token: app.getSettings 'access_token'
-      album_id: app.getSettings 'album_id'
+      access_token: app.options.access_token
+      album_id: app.options.album_id
 
     do app.bindPasteHandler
 
@@ -98,23 +112,13 @@ class App
 
 
   isAuth: ->
-    @getSettings 'access_token'
+    app.options.access_token
 
-
-  getSettings: (name) ->
-    data = JSON.parse localStorage.getItem APP_NAME
-    return console.log "your settings (#{name}) are empty" unless data
-    data[name]
 
 
   setSettings: (name, value) ->
-    data = JSON.parse localStorage.getItem APP_NAME
-    data = data or {}
-    data[name] = value
-    result=JSON.stringify data
-    if(result!="undefined")
-      localStorage.setItem APP_NAME, JSON.stringify data
-    console.log 'syncStorage', data
+    app.options[name] = value
+    syncStorage.set 'ctrl-vk': app.options
 
 
   startAuthorize: ->
@@ -126,11 +130,9 @@ class App
         if data.authorize_url
           app.finishAuthorize data.authorize_url
           syncStorage.set authorize_url: null
-          syncStorage.set access_token_for_creating_album: app.getSettings 'access_token'
           clearInterval intr_id
 
-          if RegExp(OPTIONS_URI).test location.href
-            do location.reload
+          do location.reload
       ), 300
 
 

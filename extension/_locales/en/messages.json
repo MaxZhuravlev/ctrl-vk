@@ -16,7 +16,7 @@
         "description": ""
     },
     "please_set_album_link": {
-        "message": "Please set album at ctrl+vk settings",
+        "message": "Please set album at Ctrl+Vk settings",
         "description": ""
     },
     "auto_album_description": {
@@ -24,7 +24,7 @@
         "description": ""
     },
     "saved": {
-        "message": "Options saved!",
+        "message": "Options saved! Please reload Vk.com page, before first use of Ctrl+V at Vk :)",
         "description": ""
     }
 }
