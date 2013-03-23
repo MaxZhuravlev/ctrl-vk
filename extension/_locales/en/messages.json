@@ -19,6 +19,10 @@
         "message": "Please set album at ctrl+vk settings",
         "description": ""
     },
+    "auto_album_description": {
+        "message": "ctrl+vk images",
+        "description": ""
+    },
     "saved": {
         "message": "Options saved!",
         "description": ""

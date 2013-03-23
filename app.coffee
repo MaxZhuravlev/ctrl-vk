@@ -85,7 +85,7 @@ class App
       if items.album_id
         @setSettings 'album_id', items.album_id
       else
-        alert 'пожалуйста задайте album id'
+        alert chrome.i18n.getMessage 'please_set_album_link'
         # TODO redirect to settings page
         # now we should open settings page manually
 
@@ -267,7 +267,7 @@ class Vk
     params =
       access_token: @access_token
       title: 'ctrl-vk'
-      description: 'this is description album'
+      description: chrome.i18n.getMessage 'auto_album_description'
       comment_privacy: 3
       privacy: 3
 
