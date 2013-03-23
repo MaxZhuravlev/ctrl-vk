@@ -18,7 +18,9 @@ window.onload = () ->
     # this is mini router, ok?
     if RegExp(REDIRECT_URI).test location.href
       syncStorage.set authorize_url: location.href
-      chrome.extension.sendMessage what_to_do: 'close_me'
+      chrome.extension.sendMessage what_to_do: 'close_me_and_return_extension_id', (response) ->
+        alert response.extension_id
+        #app.setSettings 'extension_id', data.extension_id
     else
       do app.startAuthorize
 
@@ -46,8 +48,6 @@ class App
 
     $('#album_link_span').html chrome.i18n.getMessage 'album_link'
     $('#save_button').html chrome.i18n.getMessage 'save_button'
-    $('#auto_button').html chrome.i18n.getMessage 'auto_button'
-    $('#slogan').html chrome.i18n.getMessage 'slogan'
 
 
   init: ->
@@ -121,7 +121,22 @@ class App
       app.upload item for item in event.clipboardData.items
 
 
+  loaders: (act) ->
+    tmpl = "
+      <div class='im_preview_photo_wrap inl_bl ctrl-vk-loader '>
+        <div class='im_preview_photo'>
+          <img src='images/ajax-loader-large.gif' class='im_preview_photo'> </img>
+        </div>
+      </div>"
+
+    if act is 'add'
+      $('#im_media_preview').append tmpl
+    else if act is 'remove'
+      do $('#im_media_preview .ctrl-vk-loader:first').remove
+
+
   upload: (item) ->
+
     if /^image\/png/.test item['type']
       blob = item.getAsFile()
       reader = new FileReader
@@ -134,12 +149,15 @@ class App
           if data.error
             return alert data.error.error_msg
 
+          app.loaders 'add'
+
           image = new FormData
           image.append 'photo', dataURIToBlob(binaryString), 'photo.png'
           upload_url = data.response.upload_url
 
           vk.uploadImage image, to: upload_url, (data) =>
             vk.saveImage data, (data) =>
+              app.loaders 'remove'
               if data.error
                 alert data.error.error_msg
               else
@@ -179,7 +197,6 @@ class Vk
     $('#side_bar').append block
 
     do block.click
-    do $("#add_media_menu_2").hide
 
   makeUrl: (base, method, prms) ->
     params = []
