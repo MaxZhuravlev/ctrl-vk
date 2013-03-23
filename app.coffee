@@ -43,21 +43,19 @@ class App
   optionsPage: ->
     console.log 'options page'
 
-    syncStorage.get ['album_link', 'album_id'], (items) ->
-      console.log items
-      return unless items.album_link
-      $('#album_link').val items.album_link
+    return unless app.options.album_link
+    $('#album_link').val app.options.album_link
 
     $('#save_button').click ->
-      syncStorage.set
-        album_link: $('#album_link').val()
-        album_id: $("#album_link").val().match(/album\d+_(\d+)/)[1]
-      , ->
-        $('#status').html chrome.i18n.getMessage 'saved'
-        console.log $('#status').html()
-        setTimeout (->
-          $('#status').html ''
-        ), 7500
+
+      @setSettings 'album_link', $('#album_link').val()
+      @setSettings 'album_id', $("#album_link").val().match(/album\d+_(\d+)/)[1]
+
+      $('#status').html chrome.i18n.getMessage 'saved'
+      console.log $('#status').html()
+      setTimeout (->
+        $('#status').html ''
+      ), 7500
 
     $('#auto_button').click ->
       window.vk = new Vk
@@ -70,9 +68,8 @@ class App
         owner_id = data.response.owner_id
         album_link = "http://vk.com/album#{owner_id}_#{aid}"
 
-        syncStorage.set
-          album_link: album_link
-          album_id: aid
+        @setSettings 'album_link', album_link
+        @setSettings 'album_id', aid
 
         do location.reload
 
@@ -100,15 +97,9 @@ class App
 
 
   saveAlbumId: ->
-    syncStorage.get ['album_link', 'album_id'], (items) =>
-      console.log items # FIXME there is no album_link property
-
-      if items.album_id
-        @setSettings 'album_id', items.album_id
-      else
-        alert chrome.i18n.getMessage 'please_set_album_link'
-        # TODO redirect to settings page
-        # now we should open settings page manually
+    alert chrome.i18n.getMessage 'please_set_album_link'
+    # TODO redirect to settings page
+    # now we should open settings page manually
 
 
   isAuth: ->
