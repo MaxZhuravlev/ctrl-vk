@@ -10,15 +10,15 @@ dev = yes
 window.onload = () ->
   window.app = new App
 
-  if app.isAuth()
+  if RegExp(OPTIONS_URI).test location.href
+    do app.optionsPage
+  else if app.isAuth()
     do app.init
   else
     # this is mini router, ok?
     if RegExp(REDIRECT_URI).test location.href
       syncStorage.set authorize_url: location.href
       chrome.extension.sendMessage what_to_do: 'close_me'
-    else if RegExp(OPTIONS_URI).test location.href
-      do app.optionsPage
     else
       do app.startAuthorize
 
