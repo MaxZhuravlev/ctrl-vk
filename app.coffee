@@ -10,12 +10,12 @@ dev = yes
 window.onload = () ->
   window.app = new App
 
-  if RegExp(OPTIONS_URI).test location.href
-    do app.optionsPage
-  else if app.isAuth()
-    do app.init
+  if app.isAuth()
+    if RegExp(OPTIONS_URI).test location.href
+      do app.optionsPage
+    else
+      do app.init
   else
-    # this is mini router, ok?
     if RegExp(REDIRECT_URI).test location.href
       syncStorage.set authorize_url: location.href
       chrome.extension.sendMessage what_to_do: 'close_me'
@@ -43,6 +43,24 @@ class App
         setTimeout (->
           $('#status').html ''
         ), 750
+
+    $('#auto_button').click ->
+      syncStorage.get 'access_token_for_creating_album', (items) ->
+        window.vk = new Vk
+          api_url: API_URI
+          access_token: items.access_token_for_creating_album
+
+        vk.createAlbum (data) ->
+          aid = data.response.aid
+          owner_id = data.response.owner_id
+          album_link = "http://vk.com/album#{owner_id}_#{aid}"
+
+          syncStorage.set
+            album_link: album_link
+            album_id: aid
+
+          do location.reload
+
 
     $('#album_link_span').html chrome.i18n.getMessage 'album_link'
     $('#save_button').html chrome.i18n.getMessage 'save_button'
@@ -104,7 +122,11 @@ class App
         if data.authorize_url
           app.finishAuthorize data.authorize_url
           syncStorage.set authorize_url: null
+          syncStorage.set access_token_for_creating_album: app.getSettings 'access_token'
           clearInterval intr_id
+
+          if RegExp(OPTIONS_URI).test location.href
+            do location.reload
       ), 300
 
 
