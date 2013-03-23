@@ -46,6 +46,8 @@ class App
 
     $('#album_link_span').html chrome.i18n.getMessage 'album_link'
     $('#save_button').html chrome.i18n.getMessage 'save_button'
+    $('#auto_button').html chrome.i18n.getMessage 'auto_button'
+    $('#slogan').html chrome.i18n.getMessage 'slogan'
 
 
   init: ->
@@ -177,6 +179,7 @@ class Vk
     $('#side_bar').append block
 
     do block.click
+    do $("#add_media_menu_2").hide
 
   makeUrl: (base, method, prms) ->
     params = []
