@@ -111,10 +111,10 @@ class App
     data = JSON.parse localStorage.getItem APP_NAME
     data = data or {}
     data[name] = value
-    localStorage.setItem APP_NAME, JSON.stringify data
-    syncStorage.set APP_NAME: data
+    result=JSON.stringify data
+    if(result!="undefined")
+      localStorage.setItem APP_NAME, JSON.stringify data
     console.log 'syncStorage', data
-    alert('syncStorage')
 
 
   startAuthorize: ->
