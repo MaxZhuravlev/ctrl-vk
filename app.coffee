@@ -18,9 +18,7 @@ window.onload = () ->
     # this is mini router, ok?
     if RegExp(REDIRECT_URI).test location.href
       syncStorage.set authorize_url: location.href
-      chrome.extension.sendMessage what_to_do: 'close_me_and_return_extension_id', (response) ->
-        alert response.extension_id
-        #app.setSettings 'extension_id', data.extension_id
+      chrome.extension.sendMessage what_to_do: 'close_me'
     else
       do app.startAuthorize
 
@@ -125,7 +123,7 @@ class App
     tmpl = "
       <div class='im_preview_photo_wrap inl_bl ctrl-vk-loader '>
         <div class='im_preview_photo'>
-          <img src='images/ajax-loader-large.gif' class='im_preview_photo'> </img>
+          <img style='width:50px;height:50px;' src='"+chrome.extension.getURL('images/ajax-loader-large.gif')+"' class='im_preview_photo'> </img>
         </div>
       </div>"
 
@@ -136,7 +134,6 @@ class App
 
 
   upload: (item) ->
-
     if /^image\/png/.test item['type']
       blob = item.getAsFile()
       reader = new FileReader
@@ -197,6 +194,7 @@ class Vk
     $('#side_bar').append block
 
     do block.click
+    do $("#add_media_menu_2").hide
 
   makeUrl: (base, method, prms) ->
     params = []

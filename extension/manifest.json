@@ -15,7 +15,8 @@
   }],
 
   "web_accessible_resources": [
-    "javascripts/jquery-1.9.1.min.js"
+    "javascripts/jquery-1.9.1.min.js",
+    "images/ajax-loader-large.gif"
   ],
 
   "permissions" : [
