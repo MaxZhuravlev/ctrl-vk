@@ -46,8 +46,6 @@ class App
 
     $('#album_link_span').html chrome.i18n.getMessage 'album_link'
     $('#save_button').html chrome.i18n.getMessage 'save_button'
-    $('#auto_button').html chrome.i18n.getMessage 'auto_button'
-    $('#slogan').html chrome.i18n.getMessage 'slogan'
 
 
   init: ->
@@ -121,6 +119,20 @@ class App
       app.upload item for item in event.clipboardData.items
 
 
+  loaders: (act) ->
+    tmpl = "
+      <div class='im_preview_photo_wrap inl_bl ctrl-vk-loader '>
+        <div class='im_preview_photo'>
+          <img style='width:50px;height:50px;' src='"+chrome.extension.getURL('images/ajax-loader-large.gif')+"' class='im_preview_photo'> </img>
+        </div>
+      </div>"
+
+    if act is 'add'
+      $('#im_media_preview').append tmpl
+    else if act is 'remove'
+      do $('#im_media_preview .ctrl-vk-loader:first').remove
+
+
   upload: (item) ->
     if /^image\/png/.test item['type']
       blob = item.getAsFile()
@@ -134,12 +146,15 @@ class App
           if data.error
             return alert data.error.error_msg
 
+          app.loaders 'add'
+
           image = new FormData
           image.append 'photo', dataURIToBlob(binaryString), 'photo.png'
           upload_url = data.response.upload_url
 
           vk.uploadImage image, to: upload_url, (data) =>
             vk.saveImage data, (data) =>
+              app.loaders 'remove'
               if data.error
                 alert data.error.error_msg
               else

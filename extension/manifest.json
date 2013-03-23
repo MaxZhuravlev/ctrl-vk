@@ -1,6 +1,6 @@
 {
   "name": "ctrl-vk",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "manifest_version": 2,
   "description": "Chrome extension for ctrl+v insertion of images to vk.com",
 
@@ -15,7 +15,8 @@
   }],
 
   "web_accessible_resources": [
-    "javascripts/jquery-1.9.1.min.js"
+    "javascripts/jquery-1.9.1.min.js",
+    "images/ajax-loader-large.gif"
   ],
 
   "permissions" : [
