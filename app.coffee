@@ -11,9 +11,6 @@ window.onload = () ->
   window.app = new App
 
   if app.isAuth()
-    syncStorage.get APP_NAME, (items) ->
-      alert items[APP_NAME]
-
     if RegExp(OPTIONS_URI).test location.href
       do app.optionsPage
     else
@@ -53,7 +50,17 @@ class App
           api_url: API_URI
           access_token: items.access_token_for_creating_album
 
-        do vk.createAlbum
+
+        vk.createAlbum (data) ->
+          aid = data.response.aid
+          owner_id = data.response.owner_id
+          album_link = "http://vk.com/album#{owner_id}_#{aid}"
+
+          syncStorage.set
+            album_link: album_link
+            album_id: aid
+
+          do location.reload
 
 
     $('#album_link_span').html chrome.i18n.getMessage 'album_link'
