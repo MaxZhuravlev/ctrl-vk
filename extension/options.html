@@ -1,20 +1,77 @@
+<!DOCTYPE html>
 <html>
 <head>
     <title>Ctrl+Vk</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="css/style.css" rel="stylesheet" media="screen">
 </head>
-
 <body>
+<header class="jumbotron subhead" id="overview">
+    <div class="container">
+        <h1>Ctrl+Vk</h1>
+        <p class="lead" id="slogan">Вставляй картинки в Vk через Ctrl+V как нормальный человек</p>
+    </div>
+</header>
 
-<span id="album_link_span"></span>
-<input id="album_link" name="album_link" style="width:300px"/>
+<div class="container">
 
-<br>
-<div id="status"></div>
-<button id="save_button"></button>
-</body>
+    <div class="row" style="margin-top: 50px; margin-bottom: 50px;">
+
+
+        <div class="span12">
+
+            <label id="album_link_span" for="album_link">Укажите альбом для фотографий (альбом может быть скрытым):</label>
+
+        </div>
+
+
+        <div class="span12">
+
+            <div class="form-inline">
+            <div class="input-append">
+                <input class="span4" id="album_link" placeholder="http://vk.com/album1275628_163082897" name="album_link" type="text">
+                <button class="btn" id="save_button">Сохранить альбом</button>
+            </div>
+
+                <button class="btn btn-primary" id="auto_button" type="button">Создать альбом автоматически</button>
+            </div>
+
+            <br>
+            <div id="status"></div>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="span12">
+
+        </div>
+    </div>
+
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <p>Designed and built with all the love in the world by <a href="http://vk.com/MaxZhuravlev" target="_blank">Max</a> and <a href="http://vk.com/milushov" target="_blank">Roma</a>.</p>
+
+        <div class="row">
+            <div class="span4">
+
+            </div>
+            <div class="span4">
+            </div>
+            <div class="span4 pull-right">
+
+            </div>
+        </div>
+    </div>
+</footer>
 
 <script src="javascripts/jquery-1.9.1.min.js"></script>
+<script src="bootstrap/js/bootstrap.min.js"></script>
 <script src="javascripts/app.js"></script>
-
+</body>
 </html>
