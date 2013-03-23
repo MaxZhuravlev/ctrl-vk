@@ -15,6 +15,10 @@
         "message": "Вставляй картинки в Vk через Ctrl+V",
         "description": ""
     },
+    "please_set_album_link": {
+        "message": "Пожалуйста задайте альбом в настройках ctrl+vk",
+        "description": ""
+    },
     "saved": {
         "message": "Настройки сохранены!",
         "description": ""
