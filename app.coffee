@@ -3,11 +3,13 @@ CLIENT_ID = 3427457
 AUTHORIZATION_URI = 'https://api.vkontakte.ru/oauth/authorize'
 REDIRECT_URI = 'http://api.vk.com/blank.html'
 API_URI = 'https://api.vk.com'
-OPTIONS_URI = 'chrome-extension://.*/options.html'
+OPTIONS_URI = chrome.extension.getURL("options.html")
 #todo m1 вернуть обратно sync после отладки
 #syncStorage = chrome.storage.sync
 syncStorage = chrome.storage.local
 dev = yes
+
+#chrome.extension.sendRequest({tab_create: chrome.extension.getURL("options.html")});
 
 window.onload = () ->
   window.app = new App
@@ -97,9 +99,8 @@ class App
 
 
   saveAlbumId: ->
-    alert chrome.i18n.getMessage 'please_set_album_link'
-    # TODO redirect to settings page
-    # now we should open settings page manually
+    unless RegExp(OPTIONS_URI).test location.href
+      open chrome.extension.getURL("options.html")
 
 
   isAuth: ->
