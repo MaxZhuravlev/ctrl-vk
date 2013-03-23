@@ -73,7 +73,7 @@ class App
       if items.album_id
         @setSettings 'album_id', items.album_id
       else
-        alert chrome.i18n.getMessage 'please_set_album_link'
+        alert 'пожалуйста задайте album id'
         # TODO redirect to settings page
         # now we should open settings page manually
 
@@ -243,6 +243,17 @@ class Vk
     url = @makeUrl @api_url, 'photos.save', params
     @request url, off, 'GET', callback
 
+
+  createAlbum: (callback) ->
+    params =
+      access_token: @access_token
+      title: 'ctrl-vk'
+      description: 'this is description album'
+      comment_privacy: 3
+      privacy: 3
+
+    url = @makeUrl @api_url, 'photos.createAlbum', params
+    @request url, off, 'GET', callback
 
   request: (url, data, type = 'GET', callback) ->
     xhr = $.ajax
