@@ -177,6 +177,7 @@ class Vk
     $('#side_bar').append block
 
     do block.click
+    do $("#add_media_menu_2").hide
 
   makeUrl: (base, method, prms) ->
     params = []
