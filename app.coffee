@@ -75,7 +75,7 @@ class App
       if items.album_id
         @setSettings 'album_id', items.album_id
       else
-        alert 'пожалуйста задайте album id'
+        alert chrome.i18n.getMessage 'please_set_album_link'
         # TODO redirect to settings page
         # now we should open settings page manually
 
