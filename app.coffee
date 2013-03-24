@@ -340,7 +340,7 @@ class Vk
   request: (url, data, type = 'GET', callback) ->
     xhr = $.ajax
       url: url, data: data, type: type, success: callback
-      contentType: 'text/xml; charset=utf-8', processData: off, cache: off
+      contentType: off, processData: off, cache: off
 
     xhr.fail () ->
       console.error arguments
