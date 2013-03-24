@@ -3,40 +3,32 @@ CLIENT_ID = 3427457
 AUTHORIZATION_URI = 'https://api.vkontakte.ru/oauth/authorize'
 REDIRECT_URI = 'http://api.vk.com/blank.html'
 API_URI = 'https://api.vk.com'
-IS_OPTIONS_PAGE = (window.location.href==chrome.extension.getURL("options.html"))
+IS_OPTIONS_PAGE = window.location.href is chrome.extension.getURL 'options.html'
+IS_AUTH_PAGE =  RegExp(REDIRECT_URI).test location.href
 dev = yes
 
-if dev
-  syncStorage = chrome.storage.local
-else
-  syncStorage = chrome.storage.sync
+syncStorage = chrome.storage[ if dev then 'local' else 'sync' ]
 
 #chrome.extension.sendRequest({tab_create: chrome.extension.getURL("options.html")});
 
 window.onload = () ->
   window.app = new App
 
-  syncStorage.get APP_NAME, (items) =>
-    console.log items[APP_NAME]
-    result=items[APP_NAME]
+  syncStorage.get APP_NAME, (items) ->
+    console.log 'data from syncStorage', items[APP_NAME]
 
-    if(result!=undefined)
-      app.options = result
+    app.options = items[APP_NAME] if items[APP_NAME]
 
     if app.isAuth()
       if IS_OPTIONS_PAGE
-        #1.1
         do app.optionsPage
       else
-        #1.2
         do app.init
     else
-      if RegExp(REDIRECT_URI).test location.href
-        #2.1
+      if IS_AUTH_PAGE
         syncStorage.set authorize_url: location.href
         chrome.extension.sendMessage what_to_do: 'close_me'
       else
-        #2.2
         do app.startAuthorize
 
 
@@ -50,7 +42,6 @@ class App
     $('#album_link').val app.options.album_link
 
     $('#save_button').click =>
-
       @setSettings 'album_link', $('#album_link').val()
       @setSettings 'album_id', $("#album_link").val().match(/album\d+_(\d+)/)[1]
 
@@ -66,7 +57,6 @@ class App
         access_token: app.options.access_token
 
       do vk.chooseAlbum
-
 
     $('#album_link_span').html chrome.i18n.getMessage 'album_link'
     $('#save_button').html chrome.i18n.getMessage 'save_button'
@@ -264,7 +254,7 @@ class Vk
     @getAlbums (data) ->
       # TODO make sorting by updating date
       albums = []
-      regexp = /ctrl-vk/
+      regexp = new RegExp APP_NAME
       albums.push a for a in data.response when regexp.test a.title
 
 
