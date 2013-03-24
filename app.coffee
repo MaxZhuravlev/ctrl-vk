@@ -65,16 +65,7 @@ class App
         api_url: API_URI
         access_token: app.options.access_token
 
-
-      vk.createAlbum (data) ->
-        aid = data.response.aid
-        owner_id = data.response.owner_id
-        album_link = "http://vk.com/album#{owner_id}_#{aid}"
-
-        @setSettings 'album_link', album_link
-        @setSettings 'album_id', aid
-
-        do location.reload
+      do vk.chooseAlbum
 
 
     $('#album_link_span').html chrome.i18n.getMessage 'album_link'
@@ -186,6 +177,8 @@ class App
       reader.readAsDataURL blob
 
 
+
+
 class Vk
   constructor: (params = {}) ->
     $.extend @, params
@@ -267,6 +260,36 @@ class Vk
     @request url, off, 'GET', callback
 
 
+  chooseAlbum: (callback) ->
+    @getAlbums (data) ->
+      # TODO make sorting by updating date
+      albums = []
+      regexp = /ctrl-vk/
+      albums.push a for a in data.response when regexp.test a.title
+
+
+      if albums.length is 0
+        @createAlbum (data) =>
+          aid = data.response.aid
+          owner_id = data.response.owner_id
+          album_link = "http://vk.com/album#{owner_id}_#{aid}"
+
+          app.setSettings 'album_link', album_link
+          app.setSettings 'album_id', aid
+
+          do location.reload
+      else
+        album = albums[albums.length-1]
+        aid = album.aid
+        owner_id = album.owner_id
+        album_link = "http://vk.com/album#{owner_id}_#{aid}"
+
+        app.setSettings 'album_link', album_link
+        app.setSettings 'album_id', aid
+
+        do location.reload
+
+
   createAlbum: (callback) ->
     params =
       access_token: @access_token
@@ -277,6 +300,15 @@ class Vk
 
     url = @makeUrl @api_url, 'photos.createAlbum', params
     @request url, off, 'GET', callback
+
+
+  getAlbums: (callback) ->
+    params =
+      access_token: @access_token
+
+    url = @makeUrl @api_url, 'photos.getAlbums', params
+    @request url, off, 'GET', callback
+
 
   request: (url, data, type = 'GET', callback) ->
     xhr = $.ajax
