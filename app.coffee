@@ -313,7 +313,7 @@ class Vk
     params =
       access_token: @access_token
       title: 'ctrl-vk'
-      description: comment_for_new_album
+      description: unescape encodeURIComponent comment_for_new_album #http://mabp.kiev.ua/2008/04/02/encoding_decoding_utf_in_javascript/
       comment_privacy: 3
       privacy: 3
 
