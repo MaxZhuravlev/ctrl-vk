@@ -79,7 +79,7 @@ class App
         access_token: app.options.access_token
         album_id: app.options.album_id
 
-      hasValidAlbum=null;
+      has_valid_album = no
 
       vk.getAlbum app.options.album_id, (data) ->
 
@@ -88,21 +88,22 @@ class App
 
         if albums.length is 0
           # такого альбома у юзера нет
-          hasValidAlbum=false
+          has_valid_album = no
         else
           album = albums[albums.length-1]
-          if(album.size<500)
-            hasValidAlbum=true
+          if album.size < 500
+            has_valid_album = yes
           else
-            hasValidAlbum=false
+            has_valid_album = no
 
-        unless hasValidAlbum
-          # если альбом ранее задавался со страницы настроек, то второй и последующие разы создаём его автоматически. чтоб юзер лишний раз не кликал.
+        unless has_valid_album
+          # если альбом ранее задавался со страницы настроек,
+          # то второй и последующие разы создаём его автоматически.
+          # чтоб юзер лишний раз не кликал.
           return vk.chooseAlbum getMessage 'second_auto_album_description'
-
-
     else
-      #в первый раз открываем страницу настроек, чтобы юзер мог сам указать желаемый альбом
+      #в первый раз открываем страницу настроек,
+      #чтобы юзер мог сам указать желаемый альбом
       return do @fistTimeAlbumChoose
 
 
@@ -117,12 +118,14 @@ class App
   isAuth: ->
     app.options.access_token
 
+
   hasAlbum: ->
-    return app.options.album_id
+    app.options.album_id
+
 
   setSettings: (name, value) ->
     app.options[name] = value
-    syncStorage.set 'ctrl-vk': app.options
+    syncStorage.set APP_NAME: app.options
 
 
   startAuthorize: ->
@@ -283,8 +286,8 @@ class Vk
     @getAlbums (data) ->
       # TODO make sorting by updating date
       albums = []
-      regexp = /ctrl-vk/
-      albums.push a for a in data.response when (regexp.test a.title) && (a.size<500)
+      regexp = new RegExp APP_NAME
+      albums.push a for a in data.response when (regexp.test a.title) and (a.size < 500)
 
 
       if albums.length is 0
