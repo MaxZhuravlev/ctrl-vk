@@ -3,25 +3,21 @@ CLIENT_ID = 3427457
 AUTHORIZATION_URI = 'https://api.vkontakte.ru/oauth/authorize'
 REDIRECT_URI = 'http://api.vk.com/blank.html'
 API_URI = 'https://api.vk.com'
-IS_OPTIONS_PAGE = (window.location.href==chrome.extension.getURL("options.html"))
+IS_OPTIONS_PAGE = window.location.href is chrome.extension.getURL 'options.html'
+IS_AUTH_PAGE =  RegExp(REDIRECT_URI).test location.href
 dev = yes
 
-if dev
-  syncStorage = chrome.storage.local
-else
-  syncStorage = chrome.storage.sync
+syncStorage = chrome.storage[ if dev then 'local' else 'sync' ]
 
 #chrome.extension.sendRequest({tab_create: chrome.extension.getURL("options.html")});
 
 window.onload = () ->
   window.app = new App
 
-  syncStorage.get APP_NAME, (items) =>
-    console.log items[APP_NAME]
-    result=items[APP_NAME]
+  syncStorage.get APP_NAME, (items) ->
+    console.log 'data from syncStorage', items[APP_NAME]
 
-    if(result!=undefined)
-      app.options = result
+    app.options = items[APP_NAME] if items[APP_NAME]
 
     if app.isAuth()
       if IS_OPTIONS_PAGE
@@ -31,15 +27,12 @@ window.onload = () ->
         #1.2
         do app.init
     else
-      if RegExp(REDIRECT_URI).test location.href
-        #2.1
+      if IS_AUTH_PAGE
         syncStorage.set authorize_url: location.href
         chrome.extension.sendMessage what_to_do: 'close_me'
       else
         #2.2
         do app.startAuthorize
-
-
 
 
 class App
@@ -52,7 +45,6 @@ class App
     $('#album_link').val app.options.album_link
 
     $('#save_button').click =>
-
       @setSettings 'album_link', $('#album_link').val()
       @setSettings 'album_id', $("#album_link").val().match(/album\d+_(\d+)/)[1]
 
@@ -67,8 +59,7 @@ class App
         api_url: API_URI
         access_token: app.options.access_token
 
-      do vk.chooseAlbum chrome.i18n.getMessage 'first_auto_album_description'
-
+      do vk.chooseAlbum
 
     $('#album_link_span').html chrome.i18n.getMessage 'album_link'
     $('#save_button').html chrome.i18n.getMessage 'save_button'
@@ -79,46 +70,21 @@ class App
   init: ->
     console.log 'app start'
 
-    if app.hasAlbum()
-      window.vk = new Vk
-        client_id: CLIENT_ID
-        authorization_uri: AUTHORIZATION_URI
-        redirect_uri: REDIRECT_URI
-        api_url: API_URI
-        access_token: app.options.access_token
-        album_id: app.options.album_id
+    unless app.options.album_id
+      return do @saveAlbumId
 
-      hasValidAlbum=null;
-
-      vk.getAlbum app.options.album_id, (data) ->
-
-        albums = []
-        albums.push a for a in data.response
-
-        if albums.length is 0
-          # такого альбома у юзера нет
-          hasValidAlbum=false
-        else
-          album = albums[albums.length-1]
-          if(album.size<500)
-            hasValidAlbum=true
-          else
-            hasValidAlbum=false
-
-        unless hasValidAlbum
-          # если альбом ранее задавался со страницы настроек, то второй и последующие разы создаём его автоматически. чтоб юзер лишний раз не кликал.
-          return do vk.chooseAlbum chrome.i18n.getMessage 'second_auto_album_description'
-
-
-    else
-      #в первый раз открываем страницу настроек, чтобы юзер мог сам указать желаемый альбом
-      return do @fistTimeAlbumChoose
-
+    window.vk = new Vk
+      client_id: CLIENT_ID
+      authorization_uri: AUTHORIZATION_URI
+      redirect_uri: REDIRECT_URI
+      api_url: API_URI
+      access_token: app.options.access_token
+      album_id: app.options.album_id
 
     do app.bindPasteHandler
 
 
-  fistTimeAlbumChoose: ->
+  saveAlbumId: ->
     unless IS_OPTIONS_PAGE
       open chrome.extension.getURL("options.html")
 
@@ -126,8 +92,7 @@ class App
   isAuth: ->
     app.options.access_token
 
-  hasAlbum: ->
-    return app.options.album_id
+
 
   setSettings: (name, value) ->
     app.options[name] = value
@@ -288,16 +253,16 @@ class Vk
     @request url, off, 'GET', callback
 
 
-  chooseAlbum: (comment_for_new_album, callback) ->
+  chooseAlbum: (callback) ->
     @getAlbums (data) ->
       # TODO make sorting by updating date
       albums = []
       regexp = /ctrl-vk/
-      albums.push a for a in data.response when (regexp.test a.title) && (a.size<500)
+      albums.push a for a in data.response when regexp.test a.title
 
 
       if albums.length is 0
-        vk.createAlbum comment_for_new_album, (data) =>
+        @createAlbum (data) =>
           aid = data.response.aid
           owner_id = data.response.owner_id
           album_link = "http://vk.com/album#{owner_id}_#{aid}"
@@ -318,11 +283,11 @@ class Vk
         do location.reload
 
 
-  createAlbum: (comment_for_new_album, callback) ->
+  createAlbum: (callback) ->
     params =
       access_token: @access_token
       title: 'ctrl-vk'
-      description: comment_for_new_album
+      description: chrome.i18n.getMessage 'auto_album_description'
       comment_privacy: 3
       privacy: 3
 
@@ -337,19 +302,11 @@ class Vk
     url = @makeUrl @api_url, 'photos.getAlbums', params
     @request url, off, 'GET', callback
 
-  getAlbum: (aid, callback) ->
-    params =
-      access_token: @access_token
-      aids: aid
-
-    url = @makeUrl @api_url, 'photos.getAlbums', params
-    @request url, off, 'GET', callback
-
 
   request: (url, data, type = 'GET', callback) ->
     xhr = $.ajax
       url: url, data: data, type: type, success: callback
-      contentType: 'text/xml; charset=utf-8', processData: off, cache: off
+      contentType: off, processData: off, cache: off
 
     xhr.fail () ->
       console.error arguments
