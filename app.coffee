@@ -98,7 +98,7 @@ class App
 
         unless hasValidAlbum
           # если альбом ранее задавался со страницы настроек, то второй и последующие разы создаём его автоматически. чтоб юзер лишний раз не кликал.
-          return do vk.chooseAlbum chrome.i18n.getMessage 'second_auto_album_description'
+          return vk.chooseAlbum chrome.i18n.getMessage 'second_auto_album_description'
 
 
     else
