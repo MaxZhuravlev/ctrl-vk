@@ -19,6 +19,10 @@
         "message": "Пожалуйста задайте альбом в настройках Ctrl+Vk",
         "description": ""
     },
+    "auto_button_tooltip": {
+        "message": "По умолчанию альбом будет скрытым",
+        "description": ""
+    },
     "first_auto_album_description": {
         "message": "Ctrl+Vk",
         "description": ""

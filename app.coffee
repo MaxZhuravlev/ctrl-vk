@@ -54,10 +54,15 @@ class App
         $('#status').html ''
       ), 7500
 
+    $('#auto_button').tooltip
+      'title': chrome.i18n.getMessage 'auto_button_tooltip'
+
     $('#auto_button').click ->
       window.vk = new Vk
         api_url: API_URI
         access_token: app.options.access_token
+
+
 
       do vk.chooseAlbum chrome.i18n.getMessage 'first_auto_album_description'
 
