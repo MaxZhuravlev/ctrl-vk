@@ -1,14 +1,15 @@
-syncStorage = chrome.storage.sync
-# во время отладки можно использовать local
-#syncStorage = chrome.storage.local
-
 APP_NAME = 'ctrl-vk'
 CLIENT_ID = 3427457
 AUTHORIZATION_URI = 'https://api.vkontakte.ru/oauth/authorize'
 REDIRECT_URI = 'http://api.vk.com/blank.html'
 API_URI = 'https://api.vk.com'
 IS_OPTIONS_PAGE = (window.location.href==chrome.extension.getURL("options.html"))
-dev = no
+dev = yes
+
+if dev
+  syncStorage = chrome.storage.local
+else
+  syncStorage = chrome.storage.sync
 
 #chrome.extension.sendRequest({tab_create: chrome.extension.getURL("options.html")});
 
