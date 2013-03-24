@@ -19,6 +19,10 @@
         "message": "Please set album at Ctrl+Vk settings",
         "description": ""
     },
+    "auto_button_tooltip": {
+        "message": "Album will be hidden",
+        "description": ""
+    },
     "first_auto_album_description": {
         "message": "ctrl+vk images",
         "description": ""

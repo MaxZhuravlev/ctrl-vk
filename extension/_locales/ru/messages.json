@@ -19,12 +19,16 @@
         "message": "Пожалуйста задайте альбом в настройках Ctrl+Vk",
         "description": ""
     },
+    "auto_button_tooltip": {
+        "message": "По умолчанию альбом будет скрытым",
+        "description": ""
+    },
     "first_auto_album_description": {
-        "message": "картинки, вставленные через Ctrl+Vk",
+        "message": "Ctrl+Vk",
         "description": ""
     },
     "second_auto_album_description": {
-        "message": "картинки, вставленные через Ctrl+Vk (новый альбом создан автоматически, так как предыдущий альбом заполнен)",
+        "message": "Ctrl+Vk",
         "description": ""
     },
     "saved": {
