@@ -5,11 +5,11 @@ REDIRECT_URI = 'http://api.vk.com/blank.html'
 API_URI = 'https://api.vk.com'
 IS_OPTIONS_PAGE = window.location.href is chrome.extension.getURL 'options.html'
 IS_AUTH_PAGE =  RegExp(REDIRECT_URI).test location.href
+
 dev = yes
 
 syncStorage = chrome.storage[ if dev then 'local' else 'sync' ]
-
-#chrome.extension.sendRequest({tab_create: chrome.extension.getURL("options.html")});
+getMessage = chrome.i18n.getMessage
 
 window.onload = () ->
   window.app = new App
@@ -21,17 +21,14 @@ window.onload = () ->
 
     if app.isAuth()
       if IS_OPTIONS_PAGE
-        #1.1
         do app.optionsPage
       else
-        #1.2
         do app.init
     else
       if IS_AUTH_PAGE
         syncStorage.set authorize_url: location.href
         chrome.extension.sendMessage what_to_do: 'close_me'
       else
-        #2.2
         do app.startAuthorize
 
 
@@ -48,28 +45,26 @@ class App
       @setSettings 'album_link', $('#album_link').val()
       @setSettings 'album_id', $("#album_link").val().match(/album\d+_(\d+)/)[1]
 
-      $('#status').html chrome.i18n.getMessage 'saved'
+      $('#status').html getMessage 'saved'
       console.log $('#status').html()
       setTimeout (->
         $('#status').html ''
       ), 7500
 
     $('#auto_button').tooltip
-      'title': chrome.i18n.getMessage 'auto_button_tooltip'
+      'title': getMessage 'auto_button_tooltip'
 
     $('#auto_button').click ->
       window.vk = new Vk
         api_url: API_URI
         access_token: app.options.access_token
 
+      do vk.chooseAlbum getMessage 'first_auto_album_description'
 
-
-      do vk.chooseAlbum chrome.i18n.getMessage 'first_auto_album_description'
-
-    $('#album_link_span').html chrome.i18n.getMessage 'album_link'
-    $('#save_button').html chrome.i18n.getMessage 'save_button'
-    $('#auto_button').html chrome.i18n.getMessage 'auto_button'
-    $('#slogan').html chrome.i18n.getMessage 'slogan'
+    $('#album_link_span').html getMessage 'album_link'
+    $('#save_button').html getMessage 'save_button'
+    $('#auto_button').html getMessage 'auto_button'
+    $('#slogan').html getMessage 'slogan'
 
 
   init: ->
@@ -103,7 +98,7 @@ class App
 
         unless hasValidAlbum
           # если альбом ранее задавался со страницы настроек, то второй и последующие разы создаём его автоматически. чтоб юзер лишний раз не кликал.
-          return vk.chooseAlbum chrome.i18n.getMessage 'second_auto_album_description'
+          return vk.chooseAlbum getMessage 'second_auto_album_description'
 
 
     else
