@@ -19,8 +19,12 @@
         "message": "Please set album at Ctrl+Vk settings",
         "description": ""
     },
-    "auto_album_description": {
+    "first_auto_album_description": {
         "message": "ctrl+vk images",
+        "description": ""
+    },
+    "second_auto_album_description": {
+        "message": "ctrl+vk images (new album created automatically, because previous album is full)",
         "description": ""
     },
     "saved": {

@@ -21,14 +21,17 @@ window.onload = () ->
 
     if app.isAuth()
       if IS_OPTIONS_PAGE
+        #1.1
         do app.optionsPage
       else
+        #1.2
         do app.init
     else
       if IS_AUTH_PAGE
         syncStorage.set authorize_url: location.href
         chrome.extension.sendMessage what_to_do: 'close_me'
       else
+        #2.2
         do app.startAuthorize
 
 
@@ -254,7 +257,7 @@ class Vk
     @getAlbums (data) ->
       # TODO make sorting by updating date
       albums = []
-      regexp = new RegExp APP_NAME
+      regexp = /ctrl-vk/
       albums.push a for a in data.response when regexp.test a.title
 
 
