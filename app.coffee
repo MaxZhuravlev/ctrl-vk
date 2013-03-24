@@ -1,13 +1,14 @@
+syncStorage = chrome.storage.sync
+# во время отладки можно использовать local
+#syncStorage = chrome.storage.local
+
 APP_NAME = 'ctrl-vk'
 CLIENT_ID = 3427457
 AUTHORIZATION_URI = 'https://api.vkontakte.ru/oauth/authorize'
 REDIRECT_URI = 'http://api.vk.com/blank.html'
 API_URI = 'https://api.vk.com'
-OPTIONS_URI = chrome.extension.getURL("options.html")
-#todo m1 вернуть обратно sync после отладки
-#syncStorage = chrome.storage.sync
-syncStorage = chrome.storage.local
-dev = yes
+IS_OPTIONS_PAGE = (window.location.href==chrome.extension.getURL("options.html"))
+dev = no
 
 #chrome.extension.sendRequest({tab_create: chrome.extension.getURL("options.html")});
 
@@ -22,7 +23,7 @@ window.onload = () ->
       app.options = result
 
     if app.isAuth()
-      if RegExp(OPTIONS_URI).test location.href
+      if IS_OPTIONS_PAGE
         #1.1
         do app.optionsPage
       else
@@ -45,10 +46,9 @@ class App
   optionsPage: ->
     console.log 'options page'
 
-    return unless app.options.album_link
     $('#album_link').val app.options.album_link
 
-    $('#save_button').click ->
+    $('#save_button').click =>
 
       @setSettings 'album_link', $('#album_link').val()
       @setSettings 'album_id', $("#album_link").val().match(/album\d+_(\d+)/)[1]
@@ -78,12 +78,13 @@ class App
 
     $('#album_link_span').html chrome.i18n.getMessage 'album_link'
     $('#save_button').html chrome.i18n.getMessage 'save_button'
+    $('#auto_button').html chrome.i18n.getMessage 'auto_button'
+    $('#slogan').html chrome.i18n.getMessage 'slogan'
 
 
   init: ->
     console.log 'app start'
 
-    #TODO: автоматическое создание дефолтового шаблона, если шаблон не задан
     unless app.options.album_id
       return do @saveAlbumId
 
@@ -99,7 +100,7 @@ class App
 
 
   saveAlbumId: ->
-    unless RegExp(OPTIONS_URI).test location.href
+    unless IS_OPTIONS_PAGE
       open chrome.extension.getURL("options.html")
 
 
@@ -129,6 +130,7 @@ class App
 
 
   finishAuthorize: (url) ->
+    console.log "finishAuthorize"
     for param in ['access_token', 'expires_in', 'user_id']
       @setSettings param, url.getParam param
     do @init
