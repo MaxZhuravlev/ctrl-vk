@@ -100,7 +100,8 @@ class App
           # если альбом ранее задавался со страницы настроек,
           # то второй и последующие разы создаём его автоматически.
           # чтоб юзер лишний раз не кликал.
-          return vk.chooseAlbum getMessage 'second_auto_album_description'
+          vk.chooseAlbum getMessage 'second_auto_album_description'
+          do app.bindPasteHandler
     else
       #в первый раз открываем страницу настроек,
       #чтобы юзер мог сам указать желаемый альбом
@@ -111,8 +112,8 @@ class App
 
 
   fistTimeAlbumChoose: ->
-    unless IS_OPTIONS_PAGE
-      open chrome.extension.getURL("options.html")
+    if !IS_OPTIONS_PAGE and !IS_AUTH_PAGE
+      open chrome.extension.getURL 'options.html'
 
 
   isAuth: ->
@@ -125,7 +126,7 @@ class App
 
   setSettings: (name, value) ->
     app.options[name] = value
-    syncStorage.set APP_NAME: app.options
+    syncStorage.set 'ctrl-vk': app.options
 
 
   startAuthorize: ->
@@ -139,7 +140,7 @@ class App
           syncStorage.set authorize_url: null
           clearInterval intr_id
 
-          do location.reload
+          do app.init
       ), 300
 
 
