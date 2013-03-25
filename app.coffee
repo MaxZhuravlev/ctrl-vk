@@ -160,7 +160,10 @@ class App
     tmpl = "
       <div class='im_preview_photo_wrap inl_bl ctrl-vk-loader '>
         <div class='im_preview_photo'>
-          <img style='width:50px;height:50px;' src='"+chrome.extension.getURL('images/ajax-loader-large.gif')+"' class='im_preview_photo'> </img>
+          <img style='width:50px; height:50px;'
+               src='#{ chrome.extension.getURL 'images/ajax-loader-large.gif' }'
+               class='im_preview_photo'>
+          </img>
         </div>
       </div>"
 
@@ -200,11 +203,10 @@ class App
       reader.readAsDataURL blob
 
 
-
-
 class Vk
   constructor: (params = {}) ->
     $.extend @, params
+
 
   chooseMedia: (photo) ->
     base = photo.src_small.match(/http:\/\/cs\d+\.(userapi\.com|vk\.me)\/v\d+\//)[0]
@@ -225,7 +227,7 @@ class Vk
 
     inline_js = '
       var photo = JSON.parse(event.target.dataset.photo);
-      window.cur.chooseMedia(photo.type,  photo.id, [photo.src_big, photo.src, photo.hash, photo.mini]);'
+      window.cur.chooseMedia(photo.type, photo.id, [photo.src_big, photo.src, photo.hash, photo.mini]);'
 
     block = $("<a data-photo='#{photo_data}' onclick='#{inline_js}' id='ctrl-vk'>hello from ctrl-vk</a>")
     block.css 'display', 'none'
@@ -234,6 +236,7 @@ class Vk
 
     do block.click
     do $("#add_media_menu_2").hide
+
 
   makeUrl: (base, method, prms) ->
     params = []
@@ -290,7 +293,6 @@ class Vk
       regexp = new RegExp APP_NAME
       albums.push a for a in data.response when (regexp.test a.title) and (a.size < 500)
 
-
       if albums.length is 0
         vk.createAlbum comment_for_new_album, (data) =>
           aid = data.response.aid
@@ -317,7 +319,8 @@ class Vk
     params =
       access_token: @access_token
       title: 'ctrl-vk'
-      description: unescape encodeURIComponent comment_for_new_album #http://mabp.kiev.ua/2008/04/02/encoding_decoding_utf_in_javascript/
+      #http://mabp.kiev.ua/2008/04/02/encoding_decoding_utf_in_javascript/
+      description: unescape encodeURIComponent comment_for_new_album
       comment_privacy: 3
       privacy: 3
 
@@ -331,6 +334,7 @@ class Vk
 
     url = @makeUrl @api_url, 'photos.getAlbums', params
     @request url, off, 'GET', callback
+
 
   getAlbum: (aid, callback) ->
     params =
@@ -352,8 +356,10 @@ class Vk
     xhr.always () ->
       console.log arguments
 
+
 unless dev
   console.log = console.error = ->
+
 
 String.prototype.getParam = (name) ->
   reg = "[\\?&#]#{name}=([A-z,0-9]*)"
