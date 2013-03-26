@@ -34,5 +34,13 @@
     "saved": {
         "message": "Options saved! Please reload Vk.com page, before first use of Ctrl+V at Vk :)",
         "description": ""
+    },
+    "nameMax": {
+        "message": "Max Zhuravlev",
+        "description": ""
+    },
+    "nameRoma": {
+        "message": "Roma Milushov",
+        "description": ""
     }
 }

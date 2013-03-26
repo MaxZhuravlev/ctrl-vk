@@ -34,5 +34,13 @@
     "saved": {
         "message": "Настройки сохранены! Пожалуйста перезагрузите страницу vk.com перед первым использованием Ctrl+V :)",
         "description": ""
+    },
+    "nameMax": {
+        "message": "Макс Журавлев",
+        "description": ""
+    },
+    "nameRoma": {
+        "message": "Рома Милушов",
+        "description": ""
     }
 }

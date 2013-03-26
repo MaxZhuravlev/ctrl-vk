@@ -66,6 +66,8 @@ class App
     $('#save_button').html getMessage 'save_button'
     $('#auto_button').html getMessage 'auto_button'
     $('#slogan').html getMessage 'slogan'
+    $('#nameMax').html getMessage 'nameMax'
+    $('#nameRoma').html getMessage 'nameRoma'
     if /mac/i.test navigator.platform
       $('#key').attr 'src', 'images/cmd.png'
       $('#key').attr 'class', 'cmd'
