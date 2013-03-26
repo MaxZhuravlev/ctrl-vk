@@ -5,6 +5,7 @@ REDIRECT_URI = 'http://api.vk.com/blank.html'
 API_URI = 'https://api.vk.com'
 IS_OPTIONS_PAGE = window.location.href is chrome.extension.getURL 'options.html'
 IS_AUTH_PAGE =  RegExp(REDIRECT_URI).test location.href
+OPTIONS_PAGE_OPENED =  no
 
 dev = yes
 
@@ -65,6 +66,9 @@ class App
     $('#save_button').html getMessage 'save_button'
     $('#auto_button').html getMessage 'auto_button'
     $('#slogan').html getMessage 'slogan'
+    $('#nameMax').html getMessage 'nameMax'
+    $('#nameRoma').html getMessage 'nameRoma'
+    $('.or').html getMessage 'or'
     if /mac/i.test navigator.platform
       $('#key').attr 'src', 'images/cmd.png'
       $('#key').attr 'class', 'cmd'
@@ -115,8 +119,9 @@ class App
 
 
   fistTimeAlbumChoose: ->
-    if !IS_OPTIONS_PAGE and !IS_AUTH_PAGE
+    if !IS_OPTIONS_PAGE and !IS_AUTH_PAGE and !OPTIONS_PAGE_OPENED
       open chrome.extension.getURL 'options.html'
+      OPTIONS_PAGE_OPENED=yes
 
 
   isAuth: ->
@@ -155,8 +160,11 @@ class App
 
 
   bindPasteHandler: ->
-    document.onpaste = (event) =>
-      app.upload item for item in event.clipboardData.items
+    #setInterval ->
+    #  console.log 'bindPasteHandler'
+      document.onpaste = (event) =>
+        app.upload item for item in event.clipboardData.items
+    #, 1000
 
 
   loaders: (act) ->
@@ -170,13 +178,16 @@ class App
         </div>
       </div>"
 
+    multimediaPreview=$(window.getSelection().focusNode).parent().parent().parent().find('.multi_media_preview')
+
     if act is 'add'
-      $('#im_media_preview').append tmpl
+      multimediaPreview.append tmpl
     else if act is 'remove'
-      do $('#im_media_preview .ctrl-vk-loader:first').remove
+      do multimediaPreview.find('.ctrl-vk-loader:first').remove
 
 
   upload: (item) ->
+
     if /^image\/png/.test item['type']
       blob = item.getAsFile()
       reader = new FileReader
@@ -224,7 +235,10 @@ class Vk
       src: photo.src
       hash: ''
 
-    do $('#im_add_media_link').click
+    # работает и для стены и для сообщений
+    $(window.getSelection().focusNode).parent().parent().parent().find(".add_media_lnk").parent().children().each (k, v) ->
+      v.click()
+
     do $('#im_user_holder').click
     do $('#ctrl-vk').remove
 
@@ -238,7 +252,7 @@ class Vk
     $('#side_bar').append block
 
     do block.click
-    do $("#add_media_menu_2").hide
+    do $(".add_media_menu").hide
 
 
   makeUrl: (base, method, prms) ->
