@@ -178,10 +178,12 @@ class App
         </div>
       </div>"
 
+    multimediaPreview=$(window.getSelection().focusNode).parent().parent().parent().find('.multi_media_preview')
+
     if act is 'add'
-      $('#im_media_preview').append tmpl
+      multimediaPreview.append tmpl
     else if act is 'remove'
-      do $('#im_media_preview .ctrl-vk-loader:first').remove
+      do multimediaPreview.find('.ctrl-vk-loader:first').remove
 
 
   upload: (item) ->
@@ -233,10 +235,8 @@ class Vk
       src: photo.src
       hash: ''
 
-    do $('#im_add_media_link').click
-
-    # ответ со стены
-    $(window.getSelection().focusNode).parent().find(".add_media_lnk").parent().children().each (k, v) ->
+    # работает и для стены и для сообщений
+    $(window.getSelection().focusNode).parent().parent().parent().find(".add_media_lnk").parent().children().each (k, v) ->
       v.click()
 
     do $('#im_user_holder').click
