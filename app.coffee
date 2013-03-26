@@ -5,6 +5,7 @@ REDIRECT_URI = 'http://api.vk.com/blank.html'
 API_URI = 'https://api.vk.com'
 IS_OPTIONS_PAGE = window.location.href is chrome.extension.getURL 'options.html'
 IS_AUTH_PAGE =  RegExp(REDIRECT_URI).test location.href
+OPTIONS_PAGE_OPENED =  no
 
 dev = yes
 
@@ -115,8 +116,9 @@ class App
 
 
   fistTimeAlbumChoose: ->
-    if !IS_OPTIONS_PAGE and !IS_AUTH_PAGE
+    if !IS_OPTIONS_PAGE and !IS_AUTH_PAGE and !OPTIONS_PAGE_OPENED
       open chrome.extension.getURL 'options.html'
+      OPTIONS_PAGE_OPENED=yes
 
 
   isAuth: ->
