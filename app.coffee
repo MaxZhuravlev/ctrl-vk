@@ -68,6 +68,7 @@ class App
     $('#slogan').html getMessage 'slogan'
     $('#nameMax').html getMessage 'nameMax'
     $('#nameRoma').html getMessage 'nameRoma'
+    $('.or').html getMessage 'or'
     if /mac/i.test navigator.platform
       $('#key').attr 'src', 'images/cmd.png'
       $('#key').attr 'class', 'cmd'
@@ -242,7 +243,7 @@ class Vk
     $('#side_bar').append block
 
     do block.click
-    do $("#add_media_menu_2").hide
+    do $(".add_media_menu").hide
 
 
   makeUrl: (base, method, prms) ->

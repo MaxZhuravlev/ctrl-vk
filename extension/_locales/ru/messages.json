@@ -42,5 +42,9 @@
     "nameRoma": {
         "message": "Рома Милушов",
         "description": ""
+    },
+    "or": {
+        "message": "или",
+        "description": ""
     }
 }
