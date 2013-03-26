@@ -160,8 +160,11 @@ class App
 
 
   bindPasteHandler: ->
-    document.onpaste = (event) =>
-      app.upload item for item in event.clipboardData.items
+    #setInterval ->
+    #  console.log 'bindPasteHandler'
+      document.onpaste = (event) =>
+        app.upload item for item in event.clipboardData.items
+    #, 1000
 
 
   loaders: (act) ->
@@ -182,6 +185,7 @@ class App
 
 
   upload: (item) ->
+
     if /^image\/png/.test item['type']
       blob = item.getAsFile()
       reader = new FileReader
@@ -230,6 +234,11 @@ class Vk
       hash: ''
 
     do $('#im_add_media_link').click
+
+    # ответ со стены
+    $(window.getSelection().focusNode).parent().find(".add_media_lnk").parent().children().each (k, v) ->
+      v.click()
+
     do $('#im_user_holder').click
     do $('#ctrl-vk').remove
 
