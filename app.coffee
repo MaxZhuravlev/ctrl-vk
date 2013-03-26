@@ -65,6 +65,9 @@ class App
     $('#save_button').html getMessage 'save_button'
     $('#auto_button').html getMessage 'auto_button'
     $('#slogan').html getMessage 'slogan'
+    if /mac/i.test navigator.platform
+      $('#key').attr 'src', 'images/cmd.png'
+      $('#key').attr 'class', 'cmd'
 
 
   init: ->
