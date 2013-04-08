@@ -1,4 +1,12 @@
 {
+    "appName": {
+        "message": "Ctrl+Vk - paste images to vk.com!",
+        "description": ""
+    },
+    "appDesc": {
+        "message": "Chrome extension for \"Ctrl+V\" insertion of images to vk.com",
+        "description": ""
+    },
     "album_link": {
         "message": "Enter album for inserted images (album may be hidden):",
         "description": ""

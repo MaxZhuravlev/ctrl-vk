@@ -1,4 +1,12 @@
 {
+    "appName": {
+        "message": "Ctrl+Vk - вставляй в vk.com как нормальный человек!",
+        "description": ""
+    },
+    "appDesc": {
+        "message": "Позволяет вставлять картики в vk.com используя привычное сочетание клавиш \"Ctrl+V\"",
+        "description": ""
+    },
     "album_link": {
         "message": "Укажите альбом для фотографий (альбом может быть скрытым):",
         "description": ""
