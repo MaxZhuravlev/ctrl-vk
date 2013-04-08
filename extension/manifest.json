@@ -1,8 +1,8 @@
 {
-  "name": "ctrl-vk",
-  "version": "0.7.4",
+  "name": "__MSG_appName__",
+  "version": "0.7.5",
   "manifest_version": 2,
-  "description": "Chrome extension for ctrl+v insertion of images to vk.com",
+  "description": "__MSG_appDesc__",
 
   "content_scripts": [{
     "matches": ["http://vk.com/*",
