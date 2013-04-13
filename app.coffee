@@ -77,6 +77,8 @@ class App
   init: ->
     console.log 'app start'
 
+    @my_domain = 'milushov'
+
     if app.hasAlbum()
       window.vk = new Vk
         client_id: CLIENT_ID
@@ -235,24 +237,74 @@ class Vk
       src: photo.src
       hash: ''
 
-    # работает и для стены и для сообщений
-    $(window.getSelection().focusNode).parent().parent().parent().find(".add_media_lnk").parent().children().each (k, v) ->
-      v.click()
 
-    do $('#im_user_holder').click
+
+    photo_data2 = JSON.stringify
+      type: 'photo'
+      id: "#{photo.owner_id}_#{photo.pid}"
+      thumb_s: photo.src_small
+      thumb_m: photo.src
+      view_opts: JSON.stringify temp: base: base, x_: [x, 10, 100]
+
+    type = 'microblog'
+
+    # работает и для каментов и стены
+    do $(window.getSelection().focusNode).parent().parent().parent().find(".add_media_lnk").parent().children().click
+
+    if type is 'microblog'
+      do $(".add_media_menu:first").hide
+    else if type is 'comments'
+      do $(".add_media_menu:last").hide
+
+    if my = new RegExp("vk.com/#{app.my_domain}").test(location.href)
+      selector = $(".add_media_type_#{ if my then 1 else 2 }_photo nobr")
+      do selector.click
+
+    #do $('#im_user_holder').click
     do $('#ctrl-vk').remove
 
     inline_js = '
       var photo = JSON.parse(event.target.dataset.photo);
+      console.log("hello from ctrl-vk");
       window.cur.chooseMedia(photo.type, photo.id, [photo.src_big, photo.src, photo.hash, photo.mini]);'
 
-    block = $("<a data-photo='#{photo_data}' onclick='#{inline_js}' id='ctrl-vk'>hello from ctrl-vk</a>")
-    block.css 'display', 'none'
+    inline_js2 = '
+      var photo = JSON.parse(event.target.dataset.photo);
+      console.log("hello from ctrl-vk (microblog)");
+      return cur.choosePhotoMulti(photo.id,
+        cur.chooseMedia.pbind(
+          photo.type, photo.id, {
+            thumb_s: photo.thumb_s,
+            thumb_m: photo.thumb_m,
+            view_opts: photo.view_opts,
+            editable: {
+              "sizes": {
+                "s": [photo.thumb_s, 75, 75],
+                "m": [photo.thumb_s, 100, 100],
+                "x": [photo.thumb_s, 100, 100],
+                "o": [photo.thumb_s, 100, 100],
+                "p": [photo.thumb_s, 100, 100],
+                "q": [photo.thumb_s, 100, 100],
+                "r": [photo.thumb_s, 100, 100]
+              }
+            }
+          }
+        ), event
+      )
+    '
+
+
+    block = $("<a data-photo='#{photo_data2}' onclick='#{inline_js2}' id='ctrl-vk'>hello from ctrl-vk</a>")
+    block.css 'display'
 
     $('#side_bar').append block
 
-    do block.click
-    do $(".add_media_menu").hide
+    setTimeout (->
+      do $('.photos_choose_close a').click
+      do block.click
+      console.log this).bind(this)
+    , 2000
+
 
 
   makeUrl: (base, method, prms) ->
