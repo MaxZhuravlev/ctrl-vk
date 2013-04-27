@@ -7,7 +7,7 @@ IS_OPTIONS_PAGE = window.location.href is chrome.extension.getURL 'options.html'
 IS_AUTH_PAGE =  RegExp(REDIRECT_URI).test location.href
 OPTIONS_PAGE_OPENED =  no
 
-dev = yes
+dev = no
 
 syncStorage = chrome.storage[ if dev then 'local' else 'sync' ]
 getMessage = chrome.i18n.getMessage
@@ -221,38 +221,132 @@ class Vk
   constructor: (params = {}) ->
     $.extend @, params
 
+  loadCur: (type, menushka, callback) ->
+    if type=="default"
+        menushka.click()
+
+        do $('#im_user_holder').click
+
+        do $(".add_media_menu").hide
+
+        do callback
+
+
+    else
+      if type=="microBlog"
+        menushka.click()
+
+        photolink = $(".add_media_item").filter(->
+          $(this).attr("class").match /add_media_type_\d*_photo/  if $(this).attr("class") isnt `undefined`
+        )
+
+        photolink[0].click()
+
+
+        intervalID = setInterval ( ->
+          console.log "interval 100"
+          if($(".photos_close_link").length>0)
+            $(".photos_close_link")[0].click()
+            do $(".add_media_menu").hide
+
+            do callback
+            clearInterval(intervalID);
+        ), 10
+
+
+
+
+
 
   chooseMedia: (photo) ->
     base = photo.src_small.match(/http:\/\/cs\d+\.(userapi\.com|vk\.me)\/v\d+\//)[0]
     x = photo.src_small.match(/[a-zA-Z0-9]+\/[a-zA-Z0-9_-]+(?=\.jpg)/)[0]
-    mini = JSON.stringify temp: base: base, x_: [x, 50, 50]
-
-    photo_data = JSON.stringify
-      type: 'photo'
-      id: "#{photo.owner_id}_#{photo.pid}"
-      mini: mini
-      src_big: photo.src_big
-      src: photo.src
-      hash: ''
 
     # работает и для стены и для сообщений
-    $(window.getSelection().focusNode).parent().parent().parent().find(".add_media_lnk").parent().children().each (k, v) ->
-      v.click()
+    focusNode= $(window.getSelection().focusNode);
+    console.log focusNode
 
-    do $('#im_user_holder').click
-    do $('#ctrl-vk').remove
+    type="default"
+    if focusNode.attr('class')=="clear_fix"
+      type="microBlog"
 
-    inline_js = '
-      var photo = JSON.parse(event.target.dataset.photo);
-      window.cur.chooseMedia(photo.type, photo.id, [photo.src_big, photo.src, photo.hash, photo.mini]);'
 
-    block = $("<a data-photo='#{photo_data}' onclick='#{inline_js}' id='ctrl-vk'>hello from ctrl-vk</a>")
-    block.css 'display', 'none'
+    console.log "type:"+type
 
-    $('#side_bar').append block
+    menushka=focusNode.parent().parent().parent().find(".add_media_lnk")[0]
 
-    do block.click
-    do $(".add_media_menu").hide
+
+    if type=="default"
+      @loadCur type, menushka, ->
+
+        mini = JSON.stringify temp: base: base, x_: [x, 50, 50]
+
+        photo_data = JSON.stringify
+          type: 'photo'
+          id: "#{photo.owner_id}_#{photo.pid}"
+          mini: mini
+          src_big: photo.src_big
+          src: photo.src
+          hash: ''
+
+        do $('#ctrl-vk').remove
+
+        inline_js = '
+          var photo = JSON.parse(event.target.dataset.photo);
+          window.cur.chooseMedia(photo.type, photo.id, [photo.src_big, photo.src, photo.hash, photo.mini]);'
+
+        block = $("<a data-photo='#{photo_data}' onclick='#{inline_js}' id='ctrl-vk'>hello from ctrl-vk</a>")
+        block.css 'display', 'none'
+
+        $('#side_bar').append block
+
+        do block.click
+
+    else
+
+      @loadCur type, menushka, ->
+        mini2 = JSON.stringify temp: base: base, x_: [x, 10, 100]
+
+        photo_data2 = JSON.stringify
+          type: 'photo'
+          id: "#{photo.owner_id}_#{photo.pid}"
+          thumb_s: photo.src_small
+          thumb_m: photo.src
+          view_opts: mini2
+
+        inline_js2 = '
+                                var photo = JSON.parse(event.target.dataset.photo);
+                                console.log("hello from ctrl-vk (microblog)");
+                                return cur.choosePhotoMulti(photo.id,
+                                  cur.chooseMedia.pbind(
+                                    photo.type, photo.id, {
+                                      thumb_s: photo.thumb_s,
+                                      thumb_m: photo.thumb_m,
+                                      view_opts: photo.view_opts,
+                                      editable: {
+                                        "sizes": {
+                                          "s": [photo.thumb_s, 75, 75],
+                                          "m": [photo.thumb_s, 100, 100],
+                                          "x": [photo.thumb_s, 100, 100],
+                                          "o": [photo.thumb_s, 100, 100],
+                                          "p": [photo.thumb_s, 100, 100],
+                                          "q": [photo.thumb_s, 100, 100],
+                                          "r": [photo.thumb_s, 100, 100]
+                                        }
+                                      }
+                                    }
+                                  ), event
+                                )
+                              '
+        block = $("<a data-photo='#{photo_data2}' onclick='#{inline_js2}' id='ctrl-vk'>hello from ctrl-vk</a>")
+        block.css 'display', 'none'
+
+        $('#side_bar').append block
+        do block.click
+
+
+
+
 
 
   makeUrl: (base, method, prms) ->
@@ -296,7 +390,7 @@ class Vk
     params = JSON.parse params if typeof params is 'string'
 
     $.extend params,
-      caption: "#{Date.now()} #{Math.random().toFixed(3)}"
+      caption: getMessage 'photo_description'
       access_token: @access_token
 
     url = @makeUrl @api_url, 'photos.save', params
