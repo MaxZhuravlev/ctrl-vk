@@ -1,10 +1,10 @@
 {
     "appName": {
-        "message": "Ctrl+Vk - paste images to vk.com!",
+        "message": "Ctrl+Vk - paste images to vk.com using Ctrl+V or Copy/Paste!",
         "description": ""
     },
     "appDesc": {
-        "message": "Chrome extension for \"Ctrl+V\" insertion of images to vk.com",
+        "message": "Paste images to vk.com using \"Ctrl+V\" or Copy/Paste",
         "description": ""
     },
     "album_link": {
@@ -32,11 +32,15 @@
         "description": ""
     },
     "first_auto_album_description": {
-        "message": "ctrl+vk images",
+        "message": "http://vk.com/CtrlVk images ",
         "description": ""
     },
     "second_auto_album_description": {
-        "message": "ctrl+vk images (new album created automatically, because previous album is full)",
+        "message": "http://vk.com/CtrlVk images (new album created automatically, because previous album is full)",
+        "description": ""
+    },
+    "photo_description": {
+        "message": "Uploaded through Ctrl-Vk (http://vk.com/CtrlVk)",
         "description": ""
     },
     "saved": {

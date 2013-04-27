@@ -1,10 +1,10 @@
 {
     "appName": {
-        "message": "Ctrl+Vk - вставляй в vk.com как нормальный человек!",
+        "message": "Ctrl+Vk - вставляй картинки в vk.com как нормальный человек! Используя \"Ctrl+V\" и \"Копировать/Вставить\"",
         "description": ""
     },
     "appDesc": {
-        "message": "Позволяет вставлять картики в vk.com используя привычное сочетание клавиш \"Ctrl+V\"",
+        "message": "Вставляй картики в vk.com как нормальный человек! Используя сочетание клавиш \"Ctrl+V\" и \"Копировать/Вставить\".",
         "description": ""
     },
     "album_link": {
@@ -32,11 +32,15 @@
         "description": ""
     },
     "first_auto_album_description": {
-        "message": "Ctrl+Vk",
+        "message": "http://vk.com/CtrlVk",
         "description": ""
     },
     "second_auto_album_description": {
-        "message": "Ctrl+Vk",
+        "message": "http://vk.com/CtrlVk",
+        "description": ""
+    },
+    "photo_description": {
+        "message": "Ctrl-Vk (http://vk.com/CtrlVk)",
         "description": ""
     },
     "saved": {
