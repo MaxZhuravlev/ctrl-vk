@@ -1,0 +1,62 @@
+{
+    "appName": {
+        "message": "Ctrl+Vk - вставляй картинки в vk.com как нормальный человек! Используя \"Ctrl+V\" и \"Копировать/Вставить\"",
+        "description": ""
+    },
+    "appDesc": {
+        "message": "Вставляй картики в vk.com как нормальный человек! Используя сочетание клавиш \"Ctrl+V\" и \"Копировать/Вставить\".",
+        "description": ""
+    },
+    "album_link": {
+        "message": "Укажите альбом для фотографий (альбом может быть скрытым):",
+        "description": ""
+    },
+    "save_button": {
+        "message": "Сохранить",
+        "description": ""
+    },
+    "auto_button": {
+        "message": "Создать альбом автоматически",
+        "description": ""
+    },
+    "slogan": {
+        "message": "Вставляй картинки в Vk через Ctrl+V",
+        "description": ""
+    },
+    "please_set_album_link": {
+        "message": "Пожалуйста задайте альбом в настройках Ctrl+Vk",
+        "description": ""
+    },
+    "auto_button_tooltip": {
+        "message": "По умолчанию альбом будет скрытым",
+        "description": ""
+    },
+    "first_auto_album_description": {
+        "message": "http://vk.com/CtrlVk",
+        "description": ""
+    },
+    "second_auto_album_description": {
+        "message": "http://vk.com/CtrlVk",
+        "description": ""
+    },
+    "photo_description": {
+        "message": "Ctrl-Vk (http://vk.com/CtrlVk)",
+        "description": ""
+    },
+    "saved": {
+        "message": "Настройки сохранены! Пожалуйста перезагрузите страницу vk.com перед первым использованием Ctrl+V :)",
+        "description": ""
+    },
+    "nameMax": {
+        "message": "Макс Журавлев",
+        "description": ""
+    },
+    "nameRoma": {
+        "message": "Рома Милушов",
+        "description": ""
+    },
+    "or": {
+        "message": "или",
+        "description": ""
+    }
+}
