@@ -248,10 +248,14 @@ class Vk
           if($(".photos_close_link").length>0)
             $(".photos_close_link")[0].click()
             do $(".add_media_menu").hide
-
             do callback
             clearInterval(intervalID);
-        ), 10
+        ), 20
+        setTimeout (->
+          clearInterval(intervalID);
+        ), 5000
+
+
 
 
 
