@@ -7,7 +7,7 @@ IS_OPTIONS_PAGE = window.location.href is chrome.extension.getURL 'options.html'
 IS_AUTH_PAGE =  RegExp(REDIRECT_URI).test location.href
 OPTIONS_PAGE_OPENED =  no
 
-dev = no
+dev = yes
 
 syncStorage = chrome.storage[ if dev then 'local' else 'sync' ]
 getMessage = chrome.i18n.getMessage
@@ -224,14 +224,8 @@ class Vk
   loadCur: (type, menushka, callback) ->
     if type=="default"
         menushka.click()
-
         do $('#im_user_holder').click
-
-        do $(".add_media_menu").hide
-
-        do callback
-
-
+        vk.loadCurFinish callback
     else
       if type=="microBlog"
         menushka.click()
@@ -242,18 +236,43 @@ class Vk
 
         photolink[0].click()
 
-
         intervalID = setInterval ( ->
           console.log "interval 100"
           if($(".photos_close_link").length>0)
             $(".photos_close_link")[0].click()
-            do $(".add_media_menu").hide
-            do callback
+            vk.loadCurFinish callback
             clearInterval(intervalID);
         ), 20
         setTimeout (->
           clearInterval(intervalID);
         ), 5000
+
+      else
+        if type=="newMessage"
+          menushka.click()
+
+          photolink = $(".add_media_item").filter(->
+            $(this).attr("class").match /add_media_type_\d*_photo/  if $(this).attr("class") isnt `undefined`
+          )
+
+          photolink[0].click()
+
+          intervalID = setInterval ( ->
+            console.log "interval 100"
+            if($(".photos_close_link").length>0)
+              $(".photos_close_link")[0].click()
+              vk.loadCurFinish callback
+              clearInterval(intervalID);
+          ), 20
+          setTimeout (->
+            clearInterval(intervalID);
+          ), 5000
+
+
+  loadCurFinish: (callback) ->
+    do callback
+
+    do $(".add_media_menu").hide
 
 
 
@@ -273,6 +292,10 @@ class Vk
     type="default"
     if focusNode.attr('class')=="clear_fix"
       type="microBlog"
+    else
+      if (focusNode.attr('id') == "mail_box_editable")
+        type = "newMessage";
+
 
 
     console.log "type:"+type
@@ -280,7 +303,7 @@ class Vk
     menushka=focusNode.parent().parent().parent().find(".add_media_lnk")[0]
 
 
-    if type=="default"
+    if (type=="default")
       @loadCur type, menushka, ->
 
         mini = JSON.stringify temp: base: base, x_: [x, 50, 50]
@@ -309,6 +332,10 @@ class Vk
     else
 
       @loadCur type, menushka, ->
+
+        if (type=="newMessage" && dev)
+          debugger;
+
         mini2 = JSON.stringify temp: base: base, x_: [x, 10, 100]
 
         photo_data2 = JSON.stringify
