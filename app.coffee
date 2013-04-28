@@ -263,7 +263,7 @@ class Vk
 
 
   chooseMedia: (photo) ->
-    base = photo.src_small.match(/http:\/\/cs\d+\.(userapi\.com|vk\.me)\/v\d+\//)[0]
+    base = photo.src_small.match(/http:\/\/cs\d+\.(userapi\.com|vk\.me)\/(\S+\/)?v\d+\//)
     x = photo.src_small.match(/[a-zA-Z0-9]+\/[a-zA-Z0-9_-]+(?=\.jpg)/)[0]
 
     # работает и для стены и для сообщений
