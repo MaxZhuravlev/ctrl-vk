@@ -123,10 +123,8 @@ class App
       open chrome.extension.getURL 'options.html'
       OPTIONS_PAGE_OPENED=yes
 
-
   isAuth: ->
     app.options.access_token
-
 
   hasAlbum: ->
     app.options.album_id
@@ -178,9 +176,11 @@ class App
         </div>
       </div>"
 
-    multimediaPreview=$(window.getSelection().focusNode).parent().parent().parent().find('.multi_media_preview')
+    multimediaPreview=$(window.getSelection().focusNode).parents('.clear_fix, .im_write_form, .mail_box_cont').find('.multi_media_preview');
 
     if act is 'add'
+      # при первой вставки, этот блок  скрыт (например в диалогах)
+      multimediaPreview.show()
       multimediaPreview.append tmpl
     else if act is 'remove'
       do multimediaPreview.find('.ctrl-vk-loader:first').remove
@@ -262,7 +262,7 @@ class Vk
 
 
   chooseMedia: (photo) ->
-    base = photo.src_small.match(/http:\/\/cs\d+\.(userapi\.com|vk\.me)\/v\d+\//)[0]
+    base = photo.src_small.match(/http:\/\/cs\d+\.(userapi\.com|vk\.me)\/(\S+\/)?v\d+\//)
     x = photo.src_small.match(/[a-zA-Z0-9]+\/[a-zA-Z0-9_-]+(?=\.jpg)/)[0]
 
     # работает и для стены и для сообщений
