@@ -281,7 +281,7 @@ class Vk
 
     console.log "type:"+type
 
-    menushka=focusNode.parent().parent().parent().find(".add_media_lnk")[0]
+    menushka=focusNode.parents('.clear_fix, .im_write_form, .mail_box_cont').find(".add_media_lnk")[0]
 
 
     if (type=="default")
