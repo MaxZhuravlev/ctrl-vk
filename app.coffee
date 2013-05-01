@@ -64,6 +64,7 @@ class App
 
     $('#album_link_span').html getMessage 'album_link'
     $('#save_button').html getMessage 'save_button'
+    $('#at_github').html getMessage 'at_github'
     $('#auto_button').html getMessage 'auto_button'
     $('#slogan').html getMessage 'slogan'
     $('#nameMax').html getMessage 'nameMax'
@@ -123,10 +124,8 @@ class App
       open chrome.extension.getURL 'options.html'
       OPTIONS_PAGE_OPENED=yes
 
-
   isAuth: ->
     app.options.access_token
-
 
   hasAlbum: ->
     app.options.album_id
@@ -178,9 +177,11 @@ class App
         </div>
       </div>"
 
-    multimediaPreview=$(window.getSelection().focusNode).parent().parent().parent().find('.multi_media_preview')
+    multimediaPreview=$(window.getSelection().focusNode).parents('.clear_fix, .im_write_form, .mail_box_cont').find('.multi_media_preview');
 
     if act is 'add'
+      # при первой вставки, этот блок  скрыт (например в диалогах)
+      multimediaPreview.show()
       multimediaPreview.append tmpl
     else if act is 'remove'
       do multimediaPreview.find('.ctrl-vk-loader:first').remove
@@ -224,16 +225,10 @@ class Vk
   loadCur: (type, menushka, callback) ->
     if type=="default"
         menushka.click()
-
         do $('#im_user_holder').click
-
-        do $(".add_media_menu").hide
-
-        do callback
-
-
+        vk.loadCurFinish callback
     else
-      if type=="microBlog"
+      if (type=="microBlog" || type=="newMessage")
         menushka.click()
 
         photolink = $(".add_media_item").filter(->
@@ -242,24 +237,29 @@ class Vk
 
         photolink[0].click()
 
-
         intervalID = setInterval ( ->
           console.log "interval 100"
           if($(".photos_close_link").length>0)
+            clearInterval intervalID;
+            # вставка newMessage перестанет работать если делать её после закрытия
+            if type=="newMessage"
+              vk.loadCurFinish callback
             $(".photos_close_link")[0].click()
-            do $(".add_media_menu").hide
-            do callback
-            clearInterval(intervalID);
+            # а на стену можно и после закрытия вставлять
+            if type=="microBlog"
+              vk.loadCurFinish callback
         ), 20
         setTimeout (->
-          clearInterval(intervalID);
+          clearInterval intervalID;
         ), 5000
 
 
 
+  loadCurFinish: (callback) ->
 
+    do callback
 
-
+    do $(".add_media_menu").hide
 
 
   chooseMedia: (photo) ->
@@ -273,14 +273,18 @@ class Vk
     type="default"
     if focusNode.attr('class')=="clear_fix"
       type="microBlog"
+    else
+      if (focusNode.attr('id') == "mail_box_editable")
+        type = "newMessage";
+
 
 
     console.log "type:"+type
 
-    menushka=focusNode.parent().parent().parent().find(".add_media_lnk")[0]
+    menushka=focusNode.parents('.clear_fix, .im_write_form, .mail_box_cont').find(".add_media_lnk")[0]
 
 
-    if type=="default"
+    if (type=="default")
       @loadCur type, menushka, ->
 
         mini = JSON.stringify temp: base: base, x_: [x, 50, 50]
@@ -293,8 +297,6 @@ class Vk
           src: photo.src
           hash: ''
 
-        do $('#ctrl-vk').remove
-
         inline_js = '
           var photo = JSON.parse(event.target.dataset.photo);
           window.cur.chooseMedia(photo.type, photo.id, [photo.src_big, photo.src, photo.hash, photo.mini]);'
@@ -303,12 +305,12 @@ class Vk
         block.css 'display', 'none'
 
         $('#side_bar').append block
-
         do block.click
 
     else
 
       @loadCur type, menushka, ->
+
         mini2 = JSON.stringify temp: base: base, x_: [x, 10, 100]
 
         photo_data2 = JSON.stringify
@@ -318,35 +320,39 @@ class Vk
           thumb_m: photo.src
           view_opts: mini2
 
+        #  '+( if dev then " debugger; " else "" )+'
         inline_js2 = '
-                                var photo = JSON.parse(event.target.dataset.photo);
-                                console.log("hello from ctrl-vk (microblog)");
-                                return cur.choosePhotoMulti(photo.id,
-                                  cur.chooseMedia.pbind(
-                                    photo.type, photo.id, {
-                                      thumb_s: photo.thumb_s,
-                                      thumb_m: photo.thumb_m,
-                                      view_opts: photo.view_opts,
-                                      editable: {
-                                        "sizes": {
-                                          "s": [photo.thumb_s, 75, 75],
-                                          "m": [photo.thumb_s, 100, 100],
-                                          "x": [photo.thumb_s, 100, 100],
-                                          "o": [photo.thumb_s, 100, 100],
-                                          "p": [photo.thumb_s, 100, 100],
-                                          "q": [photo.thumb_s, 100, 100],
-                                          "r": [photo.thumb_s, 100, 100]
-                                        }
-                                      }
-                                    }
-                                  ), event
-                                )
-                              '
+                        var photo = JSON.parse(event.target.dataset.photo);
+                        return cur.choosePhotoMulti(photo.id,
+                          cur.chooseMedia.pbind(
+                            photo.type, photo.id, {
+                              thumb_s: photo.thumb_s,
+                              thumb_m: photo.thumb_m,
+                              view_opts: photo.view_opts,
+                              editable: {
+                                "sizes": {
+                                  "s": [photo.thumb_s, 75, 75],
+                                  "m": [photo.thumb_s, 100, 100],
+                                  "x": [photo.thumb_s, 100, 100],
+                                  "o": [photo.thumb_s, 100, 100],
+                                  "p": [photo.thumb_s, 100, 100],
+                                  "q": [photo.thumb_s, 100, 100],
+                                  "r": [photo.thumb_s, 100, 100]
+                                }
+                              }
+                            }
+                          ), event
+                        )
+                      '
         block = $("<a data-photo='#{photo_data2}' onclick='#{inline_js2}' id='ctrl-vk'>hello from ctrl-vk</a>")
         block.css 'display', 'none'
 
         $('#side_bar').append block
         do block.click
+
+
+    # после работы удаляем блок
+    do $('#ctrl-vk').remove
 
 
 

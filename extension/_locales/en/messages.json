@@ -15,6 +15,10 @@
         "message": "Save",
         "description": ""
     },
+    "at_github": {
+        "message": "This extension is on <a href='https://github.com/MaxLord/ctrl-vk' target='_blank'>github</a>!",
+        "description": ""
+    },
     "auto_button": {
         "message": "Create album automatically",
         "description": ""
