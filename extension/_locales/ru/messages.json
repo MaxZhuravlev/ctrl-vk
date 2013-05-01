@@ -1,6 +1,6 @@
 {
     "appName": {
-        "message": "Ctrl+Vk - вставляй картинки в vk.com как нормальный человек! Используя \"Ctrl+V\" и \"Копировать/Вставить\"",
+        "message": "Ctrl+VK - вставляй картинки в vk.com как нормальный человек! Используя \"Ctrl+V\" и \"Копировать/Вставить\"",
         "description": ""
     },
     "appDesc": {
@@ -24,11 +24,11 @@
         "description": ""
     },
     "slogan": {
-        "message": "Вставляй картинки в Vk через Ctrl+V",
+        "message": "Вставляй картинки в VK через Ctrl+V",
         "description": ""
     },
     "please_set_album_link": {
-        "message": "Пожалуйста задайте альбом в настройках Ctrl+Vk",
+        "message": "Пожалуйста задайте альбом в настройках Ctrl+VK",
         "description": ""
     },
     "auto_button_tooltip": {
@@ -36,15 +36,15 @@
         "description": ""
     },
     "first_auto_album_description": {
-        "message": "http://vk.com/CtrlVk",
+        "message": "http://vk.com/CtrlVK",
         "description": ""
     },
     "second_auto_album_description": {
-        "message": "http://vk.com/CtrlVk",
+        "message": "http://vk.com/CtrlVK",
         "description": ""
     },
     "photo_description": {
-        "message": "Ctrl-Vk (http://vk.com/CtrlVk)",
+        "message": "Ctrl-VK (http://vk.com/CtrlVK)",
         "description": ""
     },
     "saved": {

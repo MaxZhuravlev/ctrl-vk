@@ -1,6 +1,6 @@
 {
     "appName": {
-        "message": "Ctrl+Vk - paste images to vk.com using Ctrl+V or Copy/Paste!",
+        "message": "Ctrl+VK - paste images to vk.com using Ctrl+V or Copy/Paste!",
         "description": ""
     },
     "appDesc": {
@@ -24,11 +24,17 @@
         "description": ""
     },
     "slogan": {
-        "message": "Paste images to Vk using Ctrl+V",
+        "message": "Paste images to VK using Ctrl+V",
         "description": ""
     },
+
+    "slogan": {
+        "message": "Paste images to VK using Ctrl+V",
+        "description": ""
+    },
+
     "please_set_album_link": {
-        "message": "Please set album at Ctrl+Vk settings",
+        "message": "Please set album at Ctrl+VK settings",
         "description": ""
     },
     "auto_button_tooltip": {
@@ -36,19 +42,19 @@
         "description": ""
     },
     "first_auto_album_description": {
-        "message": "http://vk.com/CtrlVk images ",
+        "message": "http://vk.com/CtrlVK images ",
         "description": ""
     },
     "second_auto_album_description": {
-        "message": "http://vk.com/CtrlVk images (new album created automatically, because previous album is full)",
+        "message": "http://vk.com/CtrlVK images (new album created automatically, because previous album is full)",
         "description": ""
     },
     "photo_description": {
-        "message": "Uploaded through Ctrl-Vk (http://vk.com/CtrlVk)",
+        "message": "Uploaded through Ctrl-VK (http://vk.com/CtrlVK)",
         "description": ""
     },
     "saved": {
-        "message": "Options saved! Please reload Vk.com page, before first use of Ctrl+V at Vk :)",
+        "message": "Options saved! Please reload vk.com page, before first use of Ctrl+V at VK :-)",
         "description": ""
     },
     "nameMax": {
