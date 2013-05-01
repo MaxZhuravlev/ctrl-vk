@@ -27,6 +27,10 @@
     "message": "Вставляй картинки в VK через Ctrl+V"
   },
 
+  "slogan_mac": {
+    "message": "Вставляй картинки в VK через Cmd+V"
+  },
+
   "please_set_album_link": {
     "message": "Пожалуйста задайте альбом в настройках Ctrl+VK"
   },

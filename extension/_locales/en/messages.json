@@ -27,6 +27,10 @@
     "message": "Paste images to VK using Ctrl+V"
   },
 
+  "slogan_mac": {
+    "message": "Paste images to VK using Cmd+V"
+  },
+
 
   "slogan": {
     "message": "Paste images to VK using Ctrl+V"

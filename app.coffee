@@ -62,15 +62,17 @@ class App
 
       do vk.chooseAlbum getMessage 'first_auto_album_description'
 
+    isMac = -> /mac/i.test navigator.platform
+
     $('#album_link_span').html getMessage 'album_link'
     $('#save_button').html getMessage 'save_button'
     $('#at_github').html getMessage 'at_github'
     $('#auto_button').html getMessage 'auto_button'
-    $('#slogan').html getMessage 'slogan'
+    $('#slogan').html getMessage (if isMac() then 'slogan_mac' else 'slogan')
     $('#nameMax').html getMessage 'nameMax'
     $('#nameRoma').html getMessage 'nameRoma'
     $('.or').html getMessage 'or'
-    if /mac/i.test navigator.platform
+    if isMac()
       $('#key').attr 'src', 'images/cmd.png'
       $('#key').attr 'class', 'cmd'
 
