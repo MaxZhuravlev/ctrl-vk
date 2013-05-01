@@ -90,7 +90,8 @@ class App
 
       has_valid_album = no
 
-      vk.getAlbum app.options.album_id, (data) ->
+      # eta ebanyi pizdez, pacany
+      vk.getAlbum app.options.album_id, (data) =>
 
         albums = []
         albums.push a for a in data.response
@@ -104,6 +105,12 @@ class App
             has_valid_album = yes
           else
             has_valid_album = no
+
+          if album.privacy is 3
+            @setSettings 'hidden_album', yes
+          else
+            @setSettings 'hidden_album', no
+
 
         unless has_valid_album
           # если альбом ранее задавался со страницы настроек,
@@ -134,6 +141,8 @@ class App
 
   setSettings: (name, value) ->
     app.options[name] = value
+    # because this setting is local
+    return if name is 'hidden_album'
     syncStorage.set 'ctrl-vk': app.options
 
 
@@ -400,8 +409,11 @@ class Vk
   saveImage: (params, callback) ->
     params = JSON.parse params if typeof params is 'string'
 
+    unless app.options.hidden_album
+      caption = getMessage 'photo_description'
+
     $.extend params,
-      caption: getMessage 'photo_description'
+      caption: caption
       access_token: @access_token
 
     url = @makeUrl @api_url, 'photos.save', params
