@@ -66,7 +66,6 @@ class App
 
     $('#album_link_span').html getMessage 'album_link'
     $('#save_button').html getMessage 'save_button'
-    $('#at_github').html getMessage 'at_github'
     $('#auto_button').html getMessage 'auto_button'
     $('#slogan').html getMessage (if isMac() then 'slogan_mac' else 'slogan')
     $('#nameMax').html getMessage 'nameMax'
