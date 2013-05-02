@@ -5,6 +5,7 @@ body,html{
 .container-fluid{
     padding-right: 0px;
     padding-left: 0px;
+    min-height: 500px;
 }
 
 section {
