@@ -1,62 +1,75 @@
 {
-    "appName": {
-        "message": "Ctrl+Vk - paste images to vk.com using Ctrl+V or Copy/Paste!",
-        "description": ""
-    },
-    "appDesc": {
-        "message": "Paste images to vk.com using \"Ctrl+V\" or Copy/Paste",
-        "description": ""
-    },
-    "album_link": {
-        "message": "Enter album for inserted images (album may be hidden):",
-        "description": ""
-    },
-    "save_button": {
-        "message": "Save",
-        "description": ""
-    },
-    "auto_button": {
-        "message": "Create album automatically",
-        "description": ""
-    },
-    "slogan": {
-        "message": "Paste images to Vk using Ctrl+V",
-        "description": ""
-    },
-    "please_set_album_link": {
-        "message": "Please set album at Ctrl+Vk settings",
-        "description": ""
-    },
-    "auto_button_tooltip": {
-        "message": "Album will be hidden",
-        "description": ""
-    },
-    "first_auto_album_description": {
-        "message": "http://vk.com/CtrlVk images ",
-        "description": ""
-    },
-    "second_auto_album_description": {
-        "message": "http://vk.com/CtrlVk images (new album created automatically, because previous album is full)",
-        "description": ""
-    },
-    "photo_description": {
-        "message": "Uploaded through Ctrl-Vk (http://vk.com/CtrlVk)",
-        "description": ""
-    },
-    "saved": {
-        "message": "Options saved! Please reload Vk.com page, before first use of Ctrl+V at Vk :)",
-        "description": ""
-    },
-    "nameMax": {
-        "message": "Max Zhuravlev",
-        "description": ""
-    },
-    "nameRoma": {
-        "message": "Roma Milushov",
-        "description": ""
-    },
-    "or": {
-        "message": "or",
-        "description": ""
-    }
+  "appName": {
+    "message": "Ctrl+VK - paste images to vk.com using Ctrl+V or Copy/Paste!"
+  },
+
+  "appDesc": {
+    "message": "Paste images to vk.com using \"Ctrl+V\" or Copy/Paste"
+  },
+
+  "album_link": {
+    "message": "Enter album for inserted images (album may be hidden):"
+  },
+
+  "save_button": {
+    "message": "Save"
+  },
+
+  "at_github": {
+    "message": "This extension is on <a href='https://github.com/MaxLord/ctrl-vk' target='_blank'>github</a>!"
+  },
+
+  "auto_button": {
+    "message": "Create album automatically"
+  },
+
+  "slogan": {
+    "message": "Paste images to VK using Ctrl+V"
+  },
+
+  "slogan_mac": {
+    "message": "Paste images to VK using Cmd+V"
+  },
+
+
+  "slogan": {
+    "message": "Paste images to VK using Ctrl+V"
+  },
+
+
+  "please_set_album_link": {
+    "message": "Please set album at Ctrl+VK settings"
+  },
+
+  "auto_button_tooltip": {
+    "message": "Album will be hidden"
+  },
+
+  "first_auto_album_description": {
+    "message": "http://vk.com/CtrlVK images "
+  },
+
+  "second_auto_album_description": {
+    "message": "http://vk.com/CtrlVK images (new album created automatically, because previous album is full)"
+  },
+
+  "photo_description": {
+    "message": "Uploaded through Ctrl-VK (http://vk.com/CtrlVK)"
+  },
+
+  "saved": {
+    "message": "Options saved! Please reload vk.com page, before first use of Ctrl+V at VK :-)"
+  },
+
+  "nameMax": {
+    "message": "Max Zhuravlev"
+  },
+
+  "nameRoma": {
+    "message": "Roma Milushov"
+  },
+
+  "or": {
+    "message": "or"
+  }
 }
