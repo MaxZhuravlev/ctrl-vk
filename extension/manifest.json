@@ -29,7 +29,7 @@
 
   "permissions" : [
     "tabs",
-    "*://*.vk.com/*",
+    "*://*/*",
     "storage"
   ],
 
@@ -39,5 +39,6 @@
   },
 
   "options_page": "options.html",
-  "default_locale":"ru"
+  "default_locale":"ru",
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
 }

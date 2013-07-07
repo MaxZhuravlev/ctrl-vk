@@ -302,20 +302,28 @@ class Vk
         photo_data = JSON.stringify
           type: 'photo'
           id: "#{photo.owner_id}_#{photo.pid}"
-          mini: mini
           src_big: photo.src_big
           src: photo.src
           hash: ''
 
-        inline_js = '
-          var photo = JSON.parse(event.target.dataset.photo);
-          window.cur.chooseMedia(photo.type, photo.id, [photo.src_big, photo.src, photo.hash, photo.mini]);'
+        inline_js = "
+          var mini = '#{mini}';
+          var yoba = '#{photo_data}';
+          var photo = JSON.parse(yoba);
+          //alert(window.cur);
+          window.cur.chooseMedia(photo.type, photo.id, [photo.src_big, photo.src, photo.hash, mini]);
+          //alert(mini);"
 
-        block = $("<a data-photo='#{photo_data}' onclick='#{inline_js}' id='ctrl-vk'>hello from ctrl-vk</a>")
-        block.css 'display', 'none'
+        #block = $("<a data-photo='#{photo_data}' onclick='#{inline_js}' id='ctrl-vk'>hello from ctrl-vk</a>")
+        debugger
+        #block.css 'display', 'none'
 
-        $('#side_bar').append block
-        do block.click
+        #$('#side_bar').append block
+        #do block.click
+
+        chrome.extension.sendMessage what_to_do: 'ololo_click', inline_js: inline_js, mini: mini, (resp) ->
+          debugger
+          console.log resp
 
     else
 
@@ -362,7 +370,7 @@ class Vk
 
 
     # после работы удаляем блок
-    do $('#ctrl-vk').remove
+    #do $('#ctrl-vk').remove
 
 
 
